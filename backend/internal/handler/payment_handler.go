@@ -44,29 +44,31 @@ func (h *PaymentHandler) GetPaymentConfig(c *gin.Context) {
 	response.Success(c, cfg)
 }
 
-// GetPlans returns subscription plans available for sale.
-// GET /api/v1/payment/plans
-func (h *PaymentHandler) GetPlans(c *gin.Context) {
+// planWithPlatform is the sale-facing plan projection enriched with the group
+// platform for frontend color coding. It only exposes non-sensitive marketing
+// fields, so it is safe to serve on the public (unauthenticated) endpoint too.
+type planWithPlatform struct {
+	ID            int64    `json:"id"`
+	GroupID       int64    `json:"group_id"`
+	GroupPlatform string   `json:"group_platform"`
+	Name          string   `json:"name"`
+	Description   string   `json:"description"`
+	Price         float64  `json:"price"`
+	OriginalPrice *float64 `json:"original_price,omitempty"`
+	ValidityDays  int      `json:"validity_days"`
+	ValidityUnit  string   `json:"validity_unit"`
+	Features      string   `json:"features"`
+	ProductName   string   `json:"product_name"`
+	ForSale       bool     `json:"for_sale"`
+	SortOrder     int      `json:"sort_order"`
+}
+
+// listPlansForSale fetches for-sale plans and enriches them for the frontend.
+// Shared by the authenticated and public plan endpoints.
+func (h *PaymentHandler) listPlansForSale(c *gin.Context) ([]planWithPlatform, error) {
 	plans, err := h.configService.ListPlansForSale(c.Request.Context())
 	if err != nil {
-		response.ErrorFrom(c, err)
-		return
-	}
-	// Enrich plans with group platform for frontend color coding
-	type planWithPlatform struct {
-		ID            int64    `json:"id"`
-		GroupID       int64    `json:"group_id"`
-		GroupPlatform string   `json:"group_platform"`
-		Name          string   `json:"name"`
-		Description   string   `json:"description"`
-		Price         float64  `json:"price"`
-		OriginalPrice *float64 `json:"original_price,omitempty"`
-		ValidityDays  int      `json:"validity_days"`
-		ValidityUnit  string   `json:"validity_unit"`
-		Features      string   `json:"features"`
-		ProductName   string   `json:"product_name"`
-		ForSale       bool     `json:"for_sale"`
-		SortOrder     int      `json:"sort_order"`
+		return nil, err
 	}
 	platformMap := h.configService.GetGroupPlatformMap(c.Request.Context(), plans)
 	result := make([]planWithPlatform, 0, len(plans))
@@ -77,6 +79,30 @@ func (h *PaymentHandler) GetPlans(c *gin.Context) {
 			ValidityDays: p.ValidityDays, ValidityUnit: p.ValidityUnit, Features: p.Features,
 			ProductName: p.ProductName, ForSale: p.ForSale, SortOrder: p.SortOrder,
 		})
+	}
+	return result, nil
+}
+
+// GetPlans returns subscription plans available for sale.
+// GET /api/v1/payment/plans
+func (h *PaymentHandler) GetPlans(c *gin.Context) {
+	result, err := h.listPlansForSale(c)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	response.Success(c, result)
+}
+
+// GetPlansPublic returns for-sale subscription plans without authentication,
+// so the public landing page can render real pricing. Only non-sensitive
+// marketing fields (name, price, validity, features) are exposed.
+// GET /api/v1/payment/public/plans
+func (h *PaymentHandler) GetPlansPublic(c *gin.Context) {
+	result, err := h.listPlansForSale(c)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
 	}
 	response.Success(c, result)
 }

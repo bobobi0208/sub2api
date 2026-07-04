@@ -6,7 +6,29 @@
         <button @click="loadPlans" :disabled="plansLoading" class="btn btn-secondary" :title="t('common.refresh')">
           <Icon name="refresh" size="md" :class="plansLoading ? 'animate-spin' : ''" />
         </button>
-        <button @click="openPlanEdit(null)" class="btn btn-primary">{{ t('payment.admin.createPlan') }}</button>
+        <button
+          @click="openPlanEdit(null)"
+          :disabled="groupsLoading || !hasSubscriptionGroups"
+          class="btn btn-primary disabled:cursor-not-allowed disabled:opacity-50"
+          :title="hasSubscriptionGroups ? t('payment.admin.createPlan') : t('payment.admin.noSubscriptionGroupsTitle')"
+        >
+          {{ t('payment.admin.createPlan') }}
+        </button>
+      </div>
+
+      <div
+        v-if="!groupsLoading && !hasSubscriptionGroups"
+        class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-100"
+      >
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="font-medium">{{ t('payment.admin.noSubscriptionGroupsTitle') }}</p>
+            <p class="mt-1 text-amber-800 dark:text-amber-200">{{ t('payment.admin.noSubscriptionGroupsHint') }}</p>
+          </div>
+          <RouterLink to="/admin/groups" class="btn btn-secondary shrink-0">
+            {{ t('payment.admin.createSubscriptionGroup') }}
+          </RouterLink>
+        </div>
       </div>
 
       <!-- Plans Table -->
@@ -97,11 +119,16 @@ const appStore = useAppStore()
 // ==================== Groups ====================
 
 const groups = ref<AdminGroup[]>([])
+const groupsLoading = ref(false)
+const subscriptionGroups = computed(() => groups.value.filter(g => g.subscription_type === 'subscription'))
+const hasSubscriptionGroups = computed(() => subscriptionGroups.value.length > 0)
 
 async function loadGroups() {
+  groupsLoading.value = true
   try {
     groups.value = await adminAPI.groups.getAll()
   } catch { /* ignore */ }
+  finally { groupsLoading.value = false }
 }
 
 function getGroup(id: number): AdminGroup | undefined {
@@ -155,6 +182,7 @@ async function loadPlans() {
 }
 
 function openPlanEdit(plan: SubscriptionPlan | null) {
+  if (!plan && !hasSubscriptionGroups.value) return
   editingPlan.value = plan
   showPlanDialog.value = true
 }

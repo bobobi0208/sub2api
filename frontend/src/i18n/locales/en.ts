@@ -11,8 +11,8 @@ export default {
     getStarted: 'Get Started',
     goToDashboard: 'Go to Dashboard',
     // User-focused value proposition
-    heroSubtitle: 'One Key, All AI Models',
-    heroDescription: 'No need to manage multiple subscriptions. Access Claude, GPT, Gemini and more with a single API key',
+    heroSubtitle: 'Subscribe & save on premium AI',
+    heroDescription: 'Buy a day, week, or month pass for stable, direct access to Claude, GPT, Gemini and more — far below official pricing. Start instantly, no auto-renewal.',
     tags: {
       subscriptionToApi: 'Subscription to API',
       stickySession: 'Session Persistence',
@@ -98,6 +98,29 @@ export default {
       gemini: 'Gemini',
       antigravity: 'Antigravity',
       more: 'More'
+    },
+    // Reliability / SLA band
+    stats: {
+      subtitle: 'All systems operational — monitored 24/7',
+      uptime: '99.99%',
+      uptimeLabel: 'Uptime SLA',
+      latency: '<200ms',
+      latencyLabel: 'Median Latency',
+      requests: '10M+',
+      requestsLabel: 'Requests / Day',
+      monitor: '24/7',
+      monitorLabel: 'Live Monitoring'
+    },
+    // Time-based passes (data comes from admin "Orders → Subscription Plans"; hidden when none configured)
+    pricing: {
+      badge: 'Flexible Passes',
+      title: 'Choose the plan that fits you',
+      subtitle: 'Buy a pass for exactly how long you need — one pass, every model. Auto-expires, no auto-renewal.',
+      popular: 'Best Value',
+      cta: 'Buy Now',
+      perDay: '≈ {price} / day',
+      daysUnit: 'days',
+      guarantee: 'Instant activation · Alipay / WeChat / Stripe · No auto-renewal'
     },
     // CTA section
     cta: {
@@ -7359,6 +7382,9 @@ export default {
       editPlan: 'Edit Plan',
       deletePlan: 'Delete Plan',
       deletePlanConfirm: 'Are you sure you want to delete this plan?',
+      noSubscriptionGroupsTitle: 'No subscription groups yet',
+      noSubscriptionGroupsHint: 'Create a subscription-type group in group management before creating plans for sale.',
+      createSubscriptionGroup: 'Create Subscription Group',
       originalPrice: 'Original Price',
       price: 'Price',
       validityDays: 'Validity (days)',
