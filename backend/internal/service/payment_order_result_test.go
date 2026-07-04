@@ -161,6 +161,29 @@ func TestCalculateSubscriptionPaymentBaseAmountKeepsUSDPlanForUSDPayments(t *tes
 	}
 }
 
+func TestCalculateBalanceRechargePaymentBaseAmountConvertsUSDInputToCNY(t *testing.T) {
+	t.Parallel()
+
+	got := calculateBalanceRechargePaymentBaseAmount(1, "CNY")
+	if got != 6.8 {
+		t.Fatalf("balance recharge payment base amount = %v, want 6.8", got)
+	}
+
+	got = calculateBalanceRechargePaymentBaseAmount(1.91, "CNY")
+	if got != 12.99 {
+		t.Fatalf("balance recharge payment base amount = %v, want 12.99", got)
+	}
+}
+
+func TestCalculateBalanceRechargePaymentBaseAmountKeepsUSDInputForUSDPayments(t *testing.T) {
+	t.Parallel()
+
+	got := calculateBalanceRechargePaymentBaseAmount(1.91, "USD")
+	if got != 1.91 {
+		t.Fatalf("balance recharge payment base amount = %v, want 1.91", got)
+	}
+}
+
 func TestCalculateCreateOrderPayAmountForSubscriptionAppliesFeeToDirectPrice(t *testing.T) {
 	t.Parallel()
 
@@ -176,14 +199,14 @@ func TestCalculateCreateOrderPayAmountForSubscriptionAppliesFeeToDirectPrice(t *
 func TestCalculateCreditedBalanceStillUsesRechargeMultiplier(t *testing.T) {
 	t.Parallel()
 
-	got := calculateCreditedBalance(10, 0.14)
-	if got != 1.4 {
-		t.Fatalf("credited balance = %v, want 1.4", got)
+	got := calculateCreditedBalance(10)
+	if got != 10 {
+		t.Fatalf("credited balance = %v, want 10", got)
 	}
 
-	got = calculateCreditedBalance(5, 10)
-	if got != 50 {
-		t.Fatalf("credited balance = %v, want 50", got)
+	got = calculateCreditedBalance(1.239)
+	if got != 1.24 {
+		t.Fatalf("credited balance = %v, want 1.24", got)
 	}
 }
 

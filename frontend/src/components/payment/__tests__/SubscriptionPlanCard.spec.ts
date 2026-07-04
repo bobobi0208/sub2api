@@ -12,6 +12,7 @@ const i18n = createI18n({
     en: {
       payment: {
         days: "days",
+        perDayShort: "/day",
         models: "Models",
         planCard: {
           quota: "Quota",
@@ -46,6 +47,13 @@ const mountPlanCard = (groupPlatform: string) =>
   });
 
 describe("SubscriptionPlanCard", () => {
+  it("shows the daily USD equivalent before the plan validity", () => {
+    const text = mountPlanCard("openai").text();
+
+    expect(text.indexOf("$0.33")).toBeGreaterThan(text.indexOf("$10"));
+    expect(text.indexOf("$0.33")).toBeLessThan(text.indexOf("30"));
+  });
+
   it("does not show Antigravity model scopes for OpenAI plans", () => {
     const text = mountPlanCard("openai").text();
 

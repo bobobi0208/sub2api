@@ -29,7 +29,11 @@
             <span class="text-xs text-gray-400 dark:text-dark-500">$</span>
             <span :class="['text-2xl font-extrabold tracking-tight', textClass]">{{ plan.price }}</span>
           </div>
-          <span class="text-[11px] text-gray-400 dark:text-dark-500">/ {{ validitySuffix }}</span>
+          <div class="text-[11px] text-gray-400 dark:text-dark-500">
+            <span>{{ dailyPriceText }}</span>
+            <span class="mx-1">/</span>
+            <span>{{ validitySuffix }}</span>
+          </div>
           <div v-if="plan.original_price" class="mt-0.5 flex items-center justify-end gap-1.5">
             <span class="text-xs text-gray-400 line-through dark:text-dark-500">${{ plan.original_price }}</span>
             <span :class="['rounded px-1 py-0.5 text-[10px] font-semibold', discountClass]">{{ discountText }}</span>
@@ -99,6 +103,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { SubscriptionPlan } from '@/types/payment'
 import type { UserSubscription } from '@/types'
+import { dailySubscriptionPriceUSD, formatPaymentAmount } from '@/components/payment/currency'
 import {
   platformAccentBarClass,
   platformBadgeLightClass,
@@ -138,6 +143,11 @@ const discountText = computed(() => {
 const rateDisplay = computed(() => {
   const rate = props.plan.rate_multiplier ?? 1
   return `×${Number(rate.toPrecision(10))}`
+})
+
+const dailyPriceText = computed(() => {
+  const dailyPrice = dailySubscriptionPriceUSD(props.plan.price, props.plan.validity_days)
+  return `${formatPaymentAmount(dailyPrice, 'USD')}${t('payment.perDayShort')}`
 })
 
 const MODEL_SCOPE_LABELS: Record<string, string> = {

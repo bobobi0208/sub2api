@@ -44,7 +44,7 @@
             <div class="card p-6">
               <AmountInput
                 v-model="amount"
-                :amounts="[10, 20, 50, 100, 200, 500, 1000, 2000, 5000]"
+                :amounts="[1, 5, 10, 20, 50, 100, 200, 500, 1000]"
                 :min="globalMinAmount"
                 :max="globalMaxAmount"
               />
@@ -61,7 +61,11 @@
               <div class="space-y-2 text-sm">
                 <div class="flex justify-between">
                   <span class="text-gray-500 dark:text-gray-400">{{ t('payment.paymentAmount') }}</span>
-                  <span class="text-gray-900 dark:text-white">{{ formatSelectedPaymentAmount(validAmount) }}</span>
+                  <span class="text-gray-900 dark:text-white">{{ formatUSDInputAmount(validAmount) }}</span>
+                </div>
+                <div v-if="selectedCurrency !== 'USD'" class="flex justify-between">
+                  <span class="text-gray-500 dark:text-gray-400">{{ t('payment.gatewayAmount') }}</span>
+                  <span class="text-gray-900 dark:text-white">{{ formatSelectedPaymentAmount(rechargePaymentAmount) }}</span>
                 </div>
                 <div v-if="feeRate > 0" class="flex justify-between">
                   <span class="text-gray-500 dark:text-gray-400">{{ t('payment.fee') }} ({{ feeRate }}%)</span>
@@ -71,12 +75,12 @@
                   <span class="font-medium text-gray-700 dark:text-gray-300">{{ t('payment.actualPay') }}</span>
                   <span class="text-lg font-bold text-primary-600 dark:text-primary-400">{{ formatSelectedPaymentAmount(totalAmount) }}</span>
                 </div>
-                <div v-if="balanceRechargeMultiplier !== 1" class="flex justify-between" :class="{ 'border-t border-gray-200 pt-2 dark:border-dark-600': feeRate <= 0 }">
+                <div class="flex justify-between" :class="{ 'border-t border-gray-200 pt-2 dark:border-dark-600': feeRate <= 0 }">
                   <span class="text-gray-500 dark:text-gray-400">{{ t('payment.creditedBalance') }}</span>
                   <span class="text-gray-900 dark:text-white">${{ creditedAmount.toFixed(2) }}</span>
                 </div>
-                <p v-if="balanceRechargeMultiplier !== 1" class="border-t border-gray-200 pt-2 text-xs text-gray-500 dark:border-dark-600 dark:text-gray-400">
-                  {{ t('payment.rechargeRatePreview', { usd: balanceRechargeMultiplier.toFixed(2) }) }}
+                <p class="border-t border-gray-200 pt-2 text-xs text-gray-500 dark:border-dark-600 dark:text-gray-400">
+                  {{ t('payment.rechargeRatePreview', { cny: USD_TO_CNY_EXCHANGE_RATE.toFixed(2) }) }}
                 </p>
               </div>
             </div>
@@ -107,7 +111,7 @@
                     {{ formatSubscriptionPlanPrice(selectedPlan.original_price) }}
                   </span>
                   <span :class="['text-3xl font-bold', planTextClass]">{{ formatSubscriptionPlanPrice(selectedPlan.price) }}</span>
-                  <span class="text-sm text-gray-500 dark:text-gray-400">/ {{ planValiditySuffix }}</span>
+                  <span class="text-sm text-gray-500 dark:text-gray-400">{{ selectedPlanDailyPriceText }} / {{ planValiditySuffix }}</span>
                 </div>
                 <!-- Description -->
                 <p v-if="selectedPlan.description" class="mt-2 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
@@ -275,7 +279,15 @@ import { platformAccentBarClass, platformBadgeLightClass, platformBadgeClass, pl
 import SubscriptionPlanCard from '@/components/payment/SubscriptionPlanCard.vue'
 import PaymentStatusPanel from '@/components/payment/PaymentStatusPanel.vue'
 import Icon from '@/components/icons/Icon.vue'
-import { formatPaymentAmount, normalizePaymentCurrency, subscriptionPaymentAmountForCurrency } from '@/components/payment/currency'
+import {
+  USD_TO_CNY_EXCHANGE_RATE,
+  dailySubscriptionPriceUSD,
+  formatPaymentAmount,
+  normalizePaymentCurrency,
+  rechargePaymentAmountForCurrency,
+  subscriptionPaymentAmountForCurrency,
+  usdValueForPaymentCurrencyAmount,
+} from '@/components/payment/currency'
 import type { PaymentMethodOption } from '@/components/payment/PaymentMethodSelector.vue'
 import { buildPaymentErrorToastMessage, describePaymentScenarioError } from './paymentUx'
 import { hasWechatResumeQuery, parseWechatResumeRoute, stripWechatResumeQuery } from './paymentWechatResume'
@@ -490,12 +502,9 @@ const tabs = computed(() => {
 
 const visibleMethods = computed(() => getVisibleMethods(checkout.value.methods))
 const enabledMethods = computed(() => Object.keys(visibleMethods.value))
+const minBalanceRechargeUSD = 1
 const validAmount = computed(() => amount.value ?? 0)
-const balanceRechargeMultiplier = computed(() => {
-  const multiplier = checkout.value.balance_recharge_multiplier
-  return Number.isFinite(multiplier) && multiplier > 0 ? multiplier : 1
-})
-const creditedAmount = computed(() => Math.round((validAmount.value * balanceRechargeMultiplier.value) * 100) / 100)
+const creditedAmount = computed(() => Math.round(validAmount.value * 100) / 100)
 
 // Adaptive grid: center single card, 2-col for 2 plans, 3-col for 3+
 const planGridClass = computed(() => {
@@ -509,23 +518,36 @@ function amountFitsMethod(amt: number, methodType: string): boolean {
   if (amt <= 0) return true
   const ml = visibleMethods.value[methodType]
   if (!ml) return false
-  if (ml.single_min > 0 && amt < ml.single_min) return false
-  if (ml.single_max > 0 && amt > ml.single_max) return false
+  const paymentAmount = paymentAmountForMethod(amt, methodType)
+  if (ml.single_min > 0 && paymentAmount < ml.single_min) return false
+  if (ml.single_max > 0 && paymentAmount > ml.single_max) return false
   return true
+}
+
+function paymentAmountForMethod(amountUSD: number, methodType: string): number {
+  const ml = visibleMethods.value[methodType]
+  return rechargePaymentAmountForCurrency(amountUSD, ml?.currency)
+}
+
+function paymentLimitToUSDInputAmount(limitAmount: number, currency: string): number {
+  if (!Number.isFinite(limitAmount) || limitAmount <= 0) return 0
+  return usdValueForPaymentCurrencyAmount(limitAmount, currency)
 }
 
 // Visible methods decide the amount range shown to users.
 const globalMinAmount = computed(() => {
   const limits = Object.values(visibleMethods.value)
-  if (limits.length === 0) return 0
-  if (limits.some(limit => limit.single_min <= 0)) return 0
-  return Math.min(...limits.map(limit => limit.single_min))
+  if (limits.length === 0) return minBalanceRechargeUSD
+  const providerMins = limits
+    .map(limit => paymentLimitToUSDInputAmount(limit.single_min, normalizePaymentCurrency(limit.currency)))
+    .filter(limit => limit > 0)
+  return Math.max(minBalanceRechargeUSD, providerMins.length > 0 ? Math.min(...providerMins) : minBalanceRechargeUSD)
 })
 const globalMaxAmount = computed(() => {
   const limits = Object.values(visibleMethods.value)
   if (limits.length === 0) return 0
   if (limits.some(limit => limit.single_max <= 0)) return 0
-  return Math.max(...limits.map(limit => limit.single_max))
+  return Math.max(...limits.map(limit => paymentLimitToUSDInputAmount(limit.single_max, normalizePaymentCurrency(limit.currency))))
 })
 
 // Selected method's limits (for validation and error messages)
@@ -571,6 +593,10 @@ function formatSubscriptionPlanPrice(value: number): string {
   return formatPaymentAmount(value, 'USD', localeCode.value)
 }
 
+function formatUSDInputAmount(value: number): string {
+  return formatPaymentAmount(value, 'USD', localeCode.value)
+}
+
 const methodOptions = computed<PaymentMethodOption[]>(() =>
   enabledMethods.value.map((type) => {
     const ml = visibleMethods.value[type]
@@ -583,19 +609,24 @@ const methodOptions = computed<PaymentMethodOption[]>(() =>
 )
 
 const feeRate = computed(() => checkout.value?.recharge_fee_rate ?? 0)
+const rechargePaymentAmount = computed(() =>
+  rechargePaymentAmountForCurrency(validAmount.value, selectedCurrency.value)
+)
 const feeAmount = computed(() =>
-  feeRate.value > 0 && validAmount.value > 0
-    ? Math.ceil(((validAmount.value * feeRate.value) / 100) * 100) / 100
+  feeRate.value > 0 && rechargePaymentAmount.value > 0
+    ? ceilPaymentAmount((rechargePaymentAmount.value * feeRate.value) / 100, selectedCurrency.value)
     : 0
 )
 const totalAmount = computed(() =>
-  feeRate.value > 0 && validAmount.value > 0
-    ? Math.round((validAmount.value + feeAmount.value) * 100) / 100
-    : validAmount.value
+  feeRate.value > 0 && rechargePaymentAmount.value > 0
+    ? roundPaymentAmount(rechargePaymentAmount.value + feeAmount.value, selectedCurrency.value)
+    : rechargePaymentAmount.value
 )
 
 const amountError = computed(() => {
   if (validAmount.value <= 0) return ''
+  if (globalMinAmount.value > 0 && validAmount.value < globalMinAmount.value) return t('payment.amountTooLow', { min: formatUSDInputAmount(globalMinAmount.value) })
+  if (globalMaxAmount.value > 0 && validAmount.value > globalMaxAmount.value) return t('payment.amountTooHigh', { max: formatUSDInputAmount(globalMaxAmount.value) })
   // No method can handle this amount
   if (!enabledMethods.value.some((m) => amountFitsMethod(validAmount.value, m))) {
     return t('payment.amountNoMethod')
@@ -603,14 +634,17 @@ const amountError = computed(() => {
   // Selected method can't handle this amount (but others can)
   const ml = selectedLimit.value
   if (ml) {
-    if (ml.single_min > 0 && validAmount.value < ml.single_min) return t('payment.amountTooLow', { min: formatSelectedPaymentAmount(ml.single_min) })
-    if (ml.single_max > 0 && validAmount.value > ml.single_max) return t('payment.amountTooHigh', { max: formatSelectedPaymentAmount(ml.single_max) })
+    const minUSD = paymentLimitToUSDInputAmount(ml.single_min, selectedCurrency.value)
+    const maxUSD = paymentLimitToUSDInputAmount(ml.single_max, selectedCurrency.value)
+    if (minUSD > 0 && validAmount.value < minUSD) return t('payment.amountTooLow', { min: formatUSDInputAmount(minUSD) })
+    if (maxUSD > 0 && validAmount.value > maxUSD) return t('payment.amountTooHigh', { max: formatUSDInputAmount(maxUSD) })
   }
   return ''
 })
 
 const canSubmit = computed(() =>
-  validAmount.value > 0
+  validAmount.value >= globalMinAmount.value
+    && (globalMaxAmount.value <= 0 || validAmount.value <= globalMaxAmount.value)
     && amountFitsMethod(validAmount.value, selectedMethod.value)
     && selectedLimit.value?.available !== false
 )
@@ -678,6 +712,11 @@ const paymentButtonClass = computed(() => {
 // Subscription confirm: platform accent colors (clean card, no gradient)
 const planBadgeClass = computed(() => platformBadgeClass(selectedPlan.value?.group_platform || ''))
 const planTextClass = computed(() => platformTextClass(selectedPlan.value?.group_platform || ''))
+const selectedPlanDailyPriceText = computed(() => {
+  if (!selectedPlan.value) return ''
+  const dailyPrice = dailySubscriptionPriceUSD(selectedPlan.value.price, selectedPlan.value.validity_days)
+  return `${formatSubscriptionPlanPrice(dailyPrice)}${t('payment.perDayShort')}`
+})
 
 // Renewal modal state
 const showRenewalModal = ref(false)

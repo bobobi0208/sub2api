@@ -68,9 +68,10 @@ func (s *PaymentService) CreateOrder(ctx context.Context, req CreateOrderRequest
 		orderAmount = plan.Price
 		limitAmount = calculateSubscriptionPaymentBaseAmount(plan.Price, methodCurrency)
 	} else if req.OrderType == payment.OrderTypeBalance {
-		orderAmount = calculateCreditedBalance(req.Amount, cfg.BalanceRechargeMultiplier)
+		orderAmount = calculateCreditedBalance(req.Amount)
+		limitAmount = calculateBalanceRechargePaymentBaseAmount(req.Amount, methodCurrency)
 	}
-	// 余额充值倍率只影响余额充值到账；订阅套餐 price 作为美元标价，支付金额按渠道币种换算。
+	// Balance and subscription amounts are stored in USD; CNY gateways charge the converted amount.
 	payAmountStr, payAmount, err := calculateCreateOrderPayAmount(limitAmount, feeRate, methodCurrency)
 	if err != nil {
 		return nil, err
@@ -89,6 +90,8 @@ func (s *PaymentService) CreateOrder(ctx context.Context, req CreateOrderRequest
 	if selectedCurrency != methodCurrency {
 		if plan != nil {
 			limitAmount = calculateSubscriptionPaymentBaseAmount(plan.Price, selectedCurrency)
+		} else if req.OrderType == payment.OrderTypeBalance {
+			limitAmount = calculateBalanceRechargePaymentBaseAmount(req.Amount, selectedCurrency)
 		}
 		payAmountStr, payAmount, err = calculateCreateOrderPayAmount(limitAmount, feeRate, selectedCurrency)
 		if err != nil {
@@ -128,6 +131,10 @@ func (s *PaymentService) validateOrderInput(ctx context.Context, req CreateOrder
 	}
 	if math.IsNaN(req.Amount) || math.IsInf(req.Amount, 0) || req.Amount <= 0 {
 		return nil, infraerrors.BadRequest("INVALID_AMOUNT", "amount must be a positive number")
+	}
+	if req.OrderType == payment.OrderTypeBalance && req.Amount < minBalanceRechargeUSD {
+		return nil, infraerrors.BadRequest("INVALID_AMOUNT", "minimum balance recharge amount is 1 USD").
+			WithMetadata(map[string]string{"min": fmt.Sprintf("%.2f", minBalanceRechargeUSD)})
 	}
 	if (cfg.MinAmount > 0 && req.Amount < cfg.MinAmount) || (cfg.MaxAmount > 0 && req.Amount > cfg.MaxAmount) {
 		return nil, infraerrors.BadRequest("INVALID_AMOUNT", "amount out of range").

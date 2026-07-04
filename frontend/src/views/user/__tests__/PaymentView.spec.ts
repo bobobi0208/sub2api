@@ -235,8 +235,92 @@ async function mountSubscriptionConfirm(options: Parameters<typeof checkoutInfoW
   return wrapper
 }
 
+async function mountRecharge(options: {
+  checkout?: Partial<CheckoutInfoResponse>
+  method?: Partial<MethodLimit>
+} = {}) {
+  vi.useRealTimers()
+  routeState.path = '/purchase'
+  routeState.query = {}
+  routerReplace.mockReset().mockResolvedValue(undefined)
+  routerPush.mockReset().mockResolvedValue(undefined)
+  routerResolve.mockClear()
+  createOrder.mockReset().mockResolvedValue({
+    order_id: 321,
+    amount: 1,
+    pay_amount: 6.8,
+    fee_rate: 0,
+    expires_at: '2099-01-01T00:10:00.000Z',
+    payment_type: 'wxpay',
+    qr_code: 'weixin://wxpay/bizpayurl?pr=recharge',
+    out_trade_no: 'sub2_recharge_321',
+  })
+  refreshUser.mockReset()
+  fetchActiveSubscriptions.mockReset().mockResolvedValue(undefined)
+  showError.mockReset()
+  showInfo.mockReset()
+  showWarning.mockReset()
+  getCheckoutInfo.mockReset().mockResolvedValue(checkoutInfoFixture({
+    ...options.checkout,
+    methods: {
+      wxpay: {
+        daily_limit: 0,
+        daily_used: 0,
+        daily_remaining: 0,
+        single_min: 0,
+        single_max: 0,
+        fee_rate: 0,
+        available: true,
+        currency: 'CNY',
+        ...options.method,
+      },
+    },
+  }))
+  window.localStorage.clear()
+
+  const wrapper = shallowMount(PaymentView, {
+    global: {
+      stubs: {
+        AppLayout: {
+          template: '<div><slot /></div>',
+        },
+        Teleport: true,
+        Transition: false,
+      },
+    },
+  })
+  await flushPromises()
+  await flushPromises()
+  return wrapper
+}
+
+describe('PaymentView recharge amounts', () => {
+  it('uses USD input while showing converted CNY gateway payment amount', async () => {
+    const wrapper = await mountRecharge()
+
+    const amountInput = wrapper.findComponent({ name: 'AmountInput' })
+    amountInput.vm.$emit('update:modelValue', 1)
+    await flushPromises()
+
+    const text = wrapper.text()
+    expect(text).toContain(formatPaymentAmount(1, 'USD'))
+    expect(text).toContain(formatPaymentAmount(6.8, 'CNY'))
+
+    const submit = wrapper.findAll('button').find(button => button.text().includes('payment.createOrder'))
+    expect(submit).toBeTruthy()
+    await submit!.trigger('click')
+    await flushPromises()
+
+    expect(createOrder).toHaveBeenCalledWith(expect.objectContaining({
+      amount: 1,
+      order_type: 'balance',
+      payment_type: 'wxpay',
+    }))
+  })
+})
+
 describe('PaymentView subscription confirmation amounts', () => {
-  it('keeps subscription plan price independent from balance recharge multiplier', async () => {
+  it('shows USD plan price and converts CNY subscription payments independently from recharge multiplier', async () => {
     const wrapper = await mountSubscriptionConfirm({
       checkout: {
         balance_recharge_multiplier: 4,
@@ -251,17 +335,19 @@ describe('PaymentView subscription confirmation amounts', () => {
     })
 
     const text = wrapper.text()
-    const planPrice = formatPaymentAmount(200, 'CNY')
-    const originalPrice = formatPaymentAmount(300, 'CNY')
-    const convertedByRechargeMultiplier = formatPaymentAmount(50, 'CNY')
+    const planPrice = formatPaymentAmount(200, 'USD')
+    const originalPrice = formatPaymentAmount(300, 'USD')
+    const cnyPayAmount = formatPaymentAmount(1360, 'CNY')
+    const convertedByRechargeMultiplier = formatPaymentAmount(800, 'CNY')
 
     expect(text).toContain(planPrice)
     expect(text).toContain(originalPrice)
+    expect(text).toContain(cnyPayAmount)
     expect(text).not.toContain(convertedByRechargeMultiplier)
-    expect(wrapper.findAll('button').some(button => button.text().includes(planPrice))).toBe(true)
+    expect(wrapper.findAll('button').some(button => button.text().includes(cnyPayAmount))).toBe(true)
   })
 
-  it('keeps plan price when multiplier is not configured or payment currency is not CNY', async () => {
+  it('keeps USD plan display while converting only CNY gateway payments', async () => {
     const cnyWrapper = await mountSubscriptionConfirm({
       checkout: {
         balance_recharge_multiplier: 0,
@@ -274,7 +360,8 @@ describe('PaymentView subscription confirmation amounts', () => {
       },
     })
 
-    expect(cnyWrapper.text()).toContain(formatPaymentAmount(7.99, 'CNY'))
+    expect(cnyWrapper.text()).toContain(formatPaymentAmount(7.99, 'USD'))
+    expect(cnyWrapper.text()).toContain(formatPaymentAmount(54.33, 'CNY'))
     expect(cnyWrapper.text()).not.toContain(formatPaymentAmount(57.07, 'CNY'))
 
     const usdWrapper = await mountSubscriptionConfirm({
@@ -292,9 +379,10 @@ describe('PaymentView subscription confirmation amounts', () => {
 
     expect(usdWrapper.text()).toContain(formatPaymentAmount(7.99, 'USD'))
     expect(usdWrapper.text()).toContain(formatPaymentAmount(9.99, 'USD'))
+    expect(usdWrapper.findAll('button').some(button => button.text().includes(formatPaymentAmount(7.99, 'USD')))).toBe(true)
   })
 
-  it('adds fee rate to the direct subscription plan price to match backend pay_amount', async () => {
+  it('adds fee rate to the converted CNY subscription amount to match backend pay_amount', async () => {
     const wrapper = await mountSubscriptionConfirm({
       checkout: {
         balance_recharge_multiplier: 4,
@@ -309,10 +397,11 @@ describe('PaymentView subscription confirmation amounts', () => {
     })
 
     const text = wrapper.text()
-    const price = formatPaymentAmount(7.99, 'CNY')
-    const fee = formatPaymentAmount(0.20, 'CNY')
-    const total = formatPaymentAmount(8.19, 'CNY')
+    const price = formatPaymentAmount(54.33, 'CNY')
+    const fee = formatPaymentAmount(1.36, 'CNY')
+    const total = formatPaymentAmount(55.69, 'CNY')
 
+    expect(text).toContain(formatPaymentAmount(7.99, 'USD'))
     expect(text).toContain(price)
     expect(text).toContain(fee)
     expect(text).toContain(total)
