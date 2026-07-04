@@ -1,4 +1,5 @@
 export const DEFAULT_PAYMENT_CURRENCY = 'CNY'
+export const SUBSCRIPTION_USD_TO_CNY_EXCHANGE_RATE = 6.8
 
 const PAYMENT_CURRENCY_SYMBOLS: Record<string, string> = {
   USD: '$',
@@ -40,6 +41,21 @@ function paymentCurrencyFractionDigits(currency: string): number {
   } catch {
     return 2
   }
+}
+
+function roundPaymentCurrencyAmount(amount: number, currency: string): number {
+  const fractionDigits = paymentCurrencyFractionDigits(currency)
+  const factor = 10 ** fractionDigits
+  return Math.round((Number.isFinite(amount) ? amount : 0) * factor) / factor
+}
+
+export function subscriptionPaymentAmountForCurrency(planPriceUSD: number, currency?: string | null): number {
+  const normalized = normalizePaymentCurrency(currency)
+  const planPrice = Number.isFinite(planPriceUSD) ? planPriceUSD : 0
+  const paymentAmount = normalized === 'CNY' || normalized === 'RMB'
+    ? planPrice * SUBSCRIPTION_USD_TO_CNY_EXCHANGE_RATE
+    : planPrice
+  return roundPaymentCurrencyAmount(paymentAmount, normalized)
 }
 
 export function formatPaymentAmount(amount: number, currency?: string | null, locale?: string): string {

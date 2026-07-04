@@ -8,6 +8,7 @@ import (
 )
 
 const defaultBalanceRechargeMultiplier = 1.0
+const subscriptionUSDToCNYExchangeRate = 6.8
 
 func normalizeBalanceRechargeMultiplier(multiplier float64) float64 {
 	if math.IsNaN(multiplier) || math.IsInf(multiplier, 0) || multiplier <= 0 {
@@ -21,6 +22,18 @@ func calculateCreditedBalance(paymentAmount, multiplier float64) float64 {
 		Mul(decimal.NewFromFloat(normalizeBalanceRechargeMultiplier(multiplier))).
 		Round(2).
 		InexactFloat64()
+}
+
+func calculateSubscriptionPaymentBaseAmount(planPriceUSD float64, currency string) float64 {
+	normalizedCurrency, err := payment.NormalizePaymentCurrency(currency)
+	if err != nil {
+		normalizedCurrency = payment.DefaultPaymentCurrency
+	}
+	amount := decimal.NewFromFloat(planPriceUSD)
+	if normalizedCurrency == payment.DefaultPaymentCurrency {
+		amount = amount.Mul(decimal.NewFromFloat(subscriptionUSDToCNYExchangeRate))
+	}
+	return amount.Round(int32(payment.CurrencyMaxFractionDigits(normalizedCurrency))).InexactFloat64()
 }
 
 func calculateGatewayRefundAmount(orderAmount, payAmount, refundAmount float64, currency string) float64 {

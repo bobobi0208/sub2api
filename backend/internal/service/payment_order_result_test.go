@@ -138,6 +138,29 @@ func TestCalculateCreateOrderPayAmountForSubscriptionKeepsDirectPrice(t *testing
 	}
 }
 
+func TestCalculateSubscriptionPaymentBaseAmountConvertsUSDPlanToCNY(t *testing.T) {
+	t.Parallel()
+
+	got := calculateSubscriptionPaymentBaseAmount(1, "CNY")
+	if got != 6.8 {
+		t.Fatalf("subscription payment base amount = %v, want 6.8", got)
+	}
+
+	got = calculateSubscriptionPaymentBaseAmount(1.91, "CNY")
+	if got != 12.99 {
+		t.Fatalf("subscription payment base amount = %v, want 12.99", got)
+	}
+}
+
+func TestCalculateSubscriptionPaymentBaseAmountKeepsUSDPlanForUSDPayments(t *testing.T) {
+	t.Parallel()
+
+	got := calculateSubscriptionPaymentBaseAmount(1.91, "USD")
+	if got != 1.91 {
+		t.Fatalf("subscription payment base amount = %v, want 1.91", got)
+	}
+}
+
 func TestCalculateCreateOrderPayAmountForSubscriptionAppliesFeeToDirectPrice(t *testing.T) {
 	t.Parallel()
 

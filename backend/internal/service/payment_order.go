@@ -51,14 +51,6 @@ func (s *PaymentService) CreateOrder(ctx context.Context, req CreateOrderRequest
 	if s.notificationEmailService != nil {
 		s.notificationEmailService.RememberRecipientLocale(ctx, req.UserID, user.Email, req.Locale)
 	}
-	orderAmount := req.Amount
-	limitAmount := req.Amount
-	if plan != nil {
-		orderAmount = plan.Price
-		limitAmount = plan.Price
-	} else if req.OrderType == payment.OrderTypeBalance {
-		orderAmount = calculateCreditedBalance(req.Amount, cfg.BalanceRechargeMultiplier)
-	}
 	feeRate := cfg.RechargeFeeRate
 	methodCurrency := payment.DefaultPaymentCurrency
 	if s.configService != nil {
@@ -67,7 +59,18 @@ func (s *PaymentService) CreateOrder(ctx context.Context, req CreateOrderRequest
 			return nil, err
 		}
 	}
-	// 订阅套餐 price 是直付价，余额充值倍率只影响余额充值到账，不参与订阅 pay_amount 计算。
+
+	orderAmount := req.Amount
+	limitAmount := req.Amount
+	if plan != nil {
+		// Subscription plan prices are stored in USD. CNY payment providers charge
+		// the converted gateway amount while the order keeps the USD plan amount.
+		orderAmount = plan.Price
+		limitAmount = calculateSubscriptionPaymentBaseAmount(plan.Price, methodCurrency)
+	} else if req.OrderType == payment.OrderTypeBalance {
+		orderAmount = calculateCreditedBalance(req.Amount, cfg.BalanceRechargeMultiplier)
+	}
+	// 余额充值倍率只影响余额充值到账；订阅套餐 price 作为美元标价，支付金额按渠道币种换算。
 	payAmountStr, payAmount, err := calculateCreateOrderPayAmount(limitAmount, feeRate, methodCurrency)
 	if err != nil {
 		return nil, err
@@ -84,6 +87,9 @@ func (s *PaymentService) CreateOrder(ctx context.Context, req CreateOrderRequest
 		selectedCurrency = paymentProviderConfigCurrency(sel.ProviderKey, sel.Config)
 	}
 	if selectedCurrency != methodCurrency {
+		if plan != nil {
+			limitAmount = calculateSubscriptionPaymentBaseAmount(plan.Price, selectedCurrency)
+		}
 		payAmountStr, payAmount, err = calculateCreateOrderPayAmount(limitAmount, feeRate, selectedCurrency)
 		if err != nil {
 			return nil, err
