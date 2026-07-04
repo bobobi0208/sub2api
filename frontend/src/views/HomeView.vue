@@ -430,7 +430,7 @@ const stats = [
 ]
 
 // ---- Subscription plans (pulled live from admin config, public endpoint) ----
-const currency = '¥'
+const currency = '$'
 const plans = ref<SubscriptionPlan[]>([])
 
 // Convert a plan's validity into effective days for per-day price comparison.
