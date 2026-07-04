@@ -11,8 +11,8 @@ export default {
     getStarted: '立即开始',
     goToDashboard: '进入控制台',
     // 新增：面向用户的价值主张
-    heroSubtitle: '一个密钥，畅用多个 AI 模型',
-    heroDescription: '无需管理多个订阅账号，一站式接入 Claude、GPT、Gemini 等主流 AI 服务',
+    heroSubtitle: '低价订阅，畅用顶级 AI',
+    heroDescription: '按天 / 周 / 月灵活购卡，稳定直连 Claude、GPT、Gemini 等主流模型 · 价格远低于官方订阅，随买随用，到期不自动续费。',
     tags: {
       subscriptionToApi: '订阅转 API',
       stickySession: '会话保持',
@@ -98,6 +98,29 @@ export default {
       gemini: 'Gemini',
       antigravity: 'Antigravity',
       more: '更多'
+    },
+    // 可用性 / SLA 区块
+    stats: {
+      subtitle: '所有系统运行正常 · 7×24 小时监控',
+      uptime: '99.99%',
+      uptimeLabel: '服务可用性 SLA',
+      latency: '<200ms',
+      latencyLabel: '中位延迟',
+      requests: '千万级',
+      requestsLabel: '每日请求',
+      monitor: '24/7',
+      monitorLabel: '实时监控'
+    },
+    // 时长卡方案（数据来自后台「订单管理 → 订阅套餐」，未配置则不展示）
+    pricing: {
+      badge: '灵活购卡',
+      title: '选择适合你的套餐',
+      subtitle: '按需购卡，一卡畅用全部模型 · 到期自动失效，不自动续费',
+      popular: '最超值',
+      cta: '立即购买',
+      perDay: '折合 {price} / 天',
+      daysUnit: '天',
+      guarantee: '购卡即时开通 · 支持支付宝 / 微信 / Stripe · 到期不自动续费'
     },
     // CTA 区块
     cta: {
@@ -7536,6 +7559,9 @@ export default {
       editPlan: '编辑套餐',
       deletePlan: '删除套餐',
       deletePlanConfirm: '确定要删除此套餐吗？',
+      noSubscriptionGroupsTitle: '还没有订阅类型分组',
+      noSubscriptionGroupsHint: '请先在分组管理中创建一个“订阅”类型分组，然后再创建可售卖的订阅套餐。',
+      createSubscriptionGroup: '创建订阅分组',
       originalPrice: '原价',
       price: '价格',
       validityDays: '有效期（天）',
