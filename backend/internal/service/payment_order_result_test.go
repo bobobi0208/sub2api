@@ -138,17 +138,17 @@ func TestCalculateCreateOrderPayAmountForSubscriptionKeepsDirectPrice(t *testing
 	}
 }
 
-func TestCalculateSubscriptionPaymentBaseAmountConvertsUSDPlanToCNY(t *testing.T) {
+func TestCalculateSubscriptionPaymentBaseAmountUsesOneToOneCNYPaymentAmount(t *testing.T) {
 	t.Parallel()
 
 	got := calculateSubscriptionPaymentBaseAmount(1, "CNY")
-	if got != 6.8 {
-		t.Fatalf("subscription payment base amount = %v, want 6.8", got)
+	if got != 1 {
+		t.Fatalf("subscription payment base amount = %v, want 1", got)
 	}
 
 	got = calculateSubscriptionPaymentBaseAmount(1.91, "CNY")
-	if got != 12.99 {
-		t.Fatalf("subscription payment base amount = %v, want 12.99", got)
+	if got != 1.91 {
+		t.Fatalf("subscription payment base amount = %v, want 1.91", got)
 	}
 }
 
@@ -161,17 +161,17 @@ func TestCalculateSubscriptionPaymentBaseAmountKeepsUSDPlanForUSDPayments(t *tes
 	}
 }
 
-func TestCalculateBalanceRechargePaymentBaseAmountConvertsUSDInputToCNY(t *testing.T) {
+func TestCalculateBalanceRechargePaymentBaseAmountUsesOneToOneCNYPaymentAmount(t *testing.T) {
 	t.Parallel()
 
 	got := calculateBalanceRechargePaymentBaseAmount(1, "CNY")
-	if got != 6.8 {
-		t.Fatalf("balance recharge payment base amount = %v, want 6.8", got)
+	if got != 1 {
+		t.Fatalf("balance recharge payment base amount = %v, want 1", got)
 	}
 
 	got = calculateBalanceRechargePaymentBaseAmount(1.91, "CNY")
-	if got != 12.99 {
-		t.Fatalf("balance recharge payment base amount = %v, want 12.99", got)
+	if got != 1.91 {
+		t.Fatalf("balance recharge payment base amount = %v, want 1.91", got)
 	}
 }
 

@@ -248,7 +248,7 @@ async function mountRecharge(options: {
   createOrder.mockReset().mockResolvedValue({
     order_id: 321,
     amount: 1,
-    pay_amount: 6.8,
+    pay_amount: 1,
     fee_rate: 0,
     expires_at: '2099-01-01T00:10:00.000Z',
     payment_type: 'wxpay',
@@ -295,7 +295,7 @@ async function mountRecharge(options: {
 }
 
 describe('PaymentView recharge amounts', () => {
-  it('uses USD input while showing converted CNY gateway payment amount', async () => {
+  it('uses USD input while showing one-to-one CNY gateway payment amount', async () => {
     const wrapper = await mountRecharge()
 
     const amountInput = wrapper.findComponent({ name: 'AmountInput' })
@@ -304,7 +304,7 @@ describe('PaymentView recharge amounts', () => {
 
     const text = wrapper.text()
     expect(text).toContain(formatPaymentAmount(1, 'USD'))
-    expect(text).toContain(formatPaymentAmount(6.8, 'CNY'))
+    expect(text).toContain(formatPaymentAmount(1, 'CNY'))
 
     const submit = wrapper.findAll('button').find(button => button.text().includes('payment.createOrder'))
     expect(submit).toBeTruthy()
@@ -320,7 +320,7 @@ describe('PaymentView recharge amounts', () => {
 })
 
 describe('PaymentView subscription confirmation amounts', () => {
-  it('shows USD plan price and converts CNY subscription payments independently from recharge multiplier', async () => {
+  it('shows USD plan price and uses one-to-one CNY subscription payments independently from recharge multiplier', async () => {
     const wrapper = await mountSubscriptionConfirm({
       checkout: {
         balance_recharge_multiplier: 4,
@@ -337,7 +337,7 @@ describe('PaymentView subscription confirmation amounts', () => {
     const text = wrapper.text()
     const planPrice = formatPaymentAmount(200, 'USD')
     const originalPrice = formatPaymentAmount(300, 'USD')
-    const cnyPayAmount = formatPaymentAmount(1360, 'CNY')
+    const cnyPayAmount = formatPaymentAmount(200, 'CNY')
     const convertedByRechargeMultiplier = formatPaymentAmount(800, 'CNY')
 
     expect(text).toContain(planPrice)
@@ -347,7 +347,7 @@ describe('PaymentView subscription confirmation amounts', () => {
     expect(wrapper.findAll('button').some(button => button.text().includes(cnyPayAmount))).toBe(true)
   })
 
-  it('keeps USD plan display while converting only CNY gateway payments', async () => {
+  it('keeps USD plan display while using one-to-one CNY gateway payments', async () => {
     const cnyWrapper = await mountSubscriptionConfirm({
       checkout: {
         balance_recharge_multiplier: 0,
@@ -361,7 +361,7 @@ describe('PaymentView subscription confirmation amounts', () => {
     })
 
     expect(cnyWrapper.text()).toContain(formatPaymentAmount(7.99, 'USD'))
-    expect(cnyWrapper.text()).toContain(formatPaymentAmount(54.33, 'CNY'))
+    expect(cnyWrapper.text()).toContain(formatPaymentAmount(7.99, 'CNY'))
     expect(cnyWrapper.text()).not.toContain(formatPaymentAmount(57.07, 'CNY'))
 
     const usdWrapper = await mountSubscriptionConfirm({
@@ -382,7 +382,7 @@ describe('PaymentView subscription confirmation amounts', () => {
     expect(usdWrapper.findAll('button').some(button => button.text().includes(formatPaymentAmount(7.99, 'USD')))).toBe(true)
   })
 
-  it('adds fee rate to the converted CNY subscription amount to match backend pay_amount', async () => {
+  it('adds fee rate to the one-to-one CNY subscription amount to match backend pay_amount', async () => {
     const wrapper = await mountSubscriptionConfirm({
       checkout: {
         balance_recharge_multiplier: 4,
@@ -397,9 +397,9 @@ describe('PaymentView subscription confirmation amounts', () => {
     })
 
     const text = wrapper.text()
-    const price = formatPaymentAmount(54.33, 'CNY')
-    const fee = formatPaymentAmount(1.36, 'CNY')
-    const total = formatPaymentAmount(55.69, 'CNY')
+    const price = formatPaymentAmount(7.99, 'CNY')
+    const fee = formatPaymentAmount(0.20, 'CNY')
+    const total = formatPaymentAmount(8.19, 'CNY')
 
     expect(text).toContain(formatPaymentAmount(7.99, 'USD'))
     expect(text).toContain(price)

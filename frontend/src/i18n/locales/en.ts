@@ -7221,7 +7221,7 @@ export default {
     amountTooLow: 'Minimum amount is {min}',
     amountTooHigh: 'Maximum amount is {max}',
     amountNoMethod: 'No payment method available for this amount',
-    rechargeRatePreview: 'CNY payment is converted at 1 USD = {cny} CNY',
+    rechargeRatePreview: 'CNY payment is priced at 1 USD = {cny} CNY',
     perDayShort: '/day',
     refundReason: 'Refund Reason',
     refundReasonPlaceholder: 'Please describe your refund reason',

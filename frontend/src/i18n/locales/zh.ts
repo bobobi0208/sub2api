@@ -7401,7 +7401,7 @@ export default {
     amountTooLow: '最低金额为 {min}',
     amountTooHigh: '最高金额为 {max}',
     amountNoMethod: '该金额没有可用的支付方式',
-    rechargeRatePreview: '人民币支付按 1 USD = {cny} CNY 折算',
+    rechargeRatePreview: '人民币支付按 1 USD = {cny} CNY 计价',
     perDayShort: '/天',
     refundReason: '退款原因',
     refundReasonPlaceholder: '请描述您的退款原因',

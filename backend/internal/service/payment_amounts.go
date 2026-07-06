@@ -9,7 +9,7 @@ import (
 
 const defaultBalanceRechargeMultiplier = 1.0
 const minBalanceRechargeUSD = 1.0
-const usdToCNYExchangeRate = 6.8
+const usdToCNYExchangeRate = 1.0
 
 func normalizeBalanceRechargeMultiplier(multiplier float64) float64 {
 	if math.IsNaN(multiplier) || math.IsInf(multiplier, 0) || multiplier <= 0 {
