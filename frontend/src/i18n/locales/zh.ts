@@ -1169,7 +1169,7 @@ export default {
     transferFailed: '转入余额失败',
     stats: {
       rebateRate: '我的返利比例',
-      rebateRateHint: '被邀请用户每次充值后你可获得的返利比例',
+      rebateRateHint: '被邀请用户产生有效订单后你可获得的返利比例',
       invitedUsers: '邀请人数',
       availableQuota: '可转返利额度',
       frozenQuota: '冻结中',
@@ -1197,9 +1197,9 @@ export default {
     tips: {
       title: '使用说明',
       line1: '将邀请码或邀请链接分享给新用户。',
-      line2: '被邀请用户充值后，你可获得 {rate} 的返利额度。',
+      line2: '被邀请用户产生有效订单后，你可获得 {rate} 的返利额度。',
       line3: '返利额度可随时转入账户余额。',
-      line4: '新产生的返利需要经过冻结期后才能提现。'
+      line4: '新产生的返利需要经过冻结期后才可转入余额。'
     }
   },
 
@@ -1839,7 +1839,7 @@ export default {
 
     affiliates: {
       invitesDescription: '查看全站邀请关系和被邀请用户累计返利',
-      rebatesDescription: '查看每一笔产生返利的充值订单',
+      rebatesDescription: '查看每一笔产生返利的有效订单',
       transfersDescription: '查看返利额度转入账户余额的提取流水',
       errors: {
         loadFailed: '加载邀请返利记录失败'
@@ -1855,8 +1855,8 @@ export default {
         affCode: '邀请码',
         order: '订单',
         totalRebate: '累计返利',
-        orderAmount: '充值金额',
-        payAmount: '支付金额',
+        orderAmount: '消费金额',
+        payAmount: '实付金额',
         rebateAmount: '返利金额',
         paymentType: '支付方式',
         orderStatus: '订单状态',
@@ -5824,15 +5824,15 @@ export default {
         },
         affiliate: {
           title: '邀请返利',
-          description: '老用户邀请新用户注册，新用户充值后老用户按比例获得返利额度。默认关闭。',
+          description: '老用户邀请新用户注册，新用户产生有效订单后老用户按比例获得返利额度。默认关闭。',
           enabled: '启用邀请返利',
-          enabledHint: '关闭后用户菜单中的邀请页面入口隐藏、注册时忽略邀请码、新充值不再产生返利。已有返利额度仍可转入余额。',
+          enabledHint: '关闭后用户菜单中的邀请页面入口隐藏、注册时忽略邀请码、新产生的有效订单不再产生返利。已有返利额度仍可转入余额。',
           rebateRate: '全局返利比例',
-          rebateRateHint: '充值后返给邀请人的默认比例（0-100%，例如填写 10 表示返利 10%）。',
+          rebateRateHint: '邀请返利的默认比例（0-100%，例如填写 10 表示返利 10%）。',
           freezeHours: '返利冻结期（小时）',
-          freezeHoursDesc: '新产生的返利将在冻结期内无法提现。0 = 不冻结。',
+          freezeHoursDesc: '新产生的返利会先冻结，达到设置时间后才可转入余额。168 = 7 天，0 = 不冻结。',
           durationDays: '返利有效期（天）',
-          durationDaysDesc: '被邀请用户注册后多少天内的充值产生返利。0 = 永久有效。',
+          durationDaysDesc: '被邀请用户注册后多少天内产生的有效订单参与返利。0 = 永久有效。',
           perInviteeCap: '单人返利上限',
           perInviteeCapDesc: '每个被邀请用户最多产生的返利总额。0 = 无上限。',
           customUsers: {
@@ -6041,7 +6041,7 @@ export default {
         defaultBalance: '默认余额',
         defaultBalanceHint: '新用户的初始余额',
         affiliateRebateRate: '邀请返利比例',
-        affiliateRebateRateHint: '充值后返给邀请人的比例（0-100%，例如填写 10 表示返利 10%）',
+        affiliateRebateRateHint: '邀请返利比例（0-100%，例如填写 10 表示返利 10%）',
         defaultConcurrency: '默认并发数',
         defaultConcurrencyHint: '新用户的最大并发请求数',
         defaultUserRpmLimit: '默认用户 RPM 限制',

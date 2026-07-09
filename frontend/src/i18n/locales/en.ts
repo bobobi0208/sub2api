@@ -1165,7 +1165,7 @@ export default {
     transferFailed: 'Failed to transfer affiliate quota',
     stats: {
       rebateRate: 'My Rebate Rate',
-      rebateRateHint: 'What you earn each time an invitee recharges',
+      rebateRateHint: 'What you earn when an invitee creates an eligible order',
       invitedUsers: 'Invited Users',
       availableQuota: 'Available Rebate Quota',
       frozenQuota: 'Frozen',
@@ -1193,7 +1193,7 @@ export default {
     tips: {
       title: 'How It Works',
       line1: 'Share your affiliate code or invite link with new users.',
-      line2: 'When invitees recharge, you receive {rate} of the recharge as rebate quota.',
+      line2: 'When invitees create eligible orders, you receive {rate} as rebate quota.',
       line3: 'Transfer rebate quota to balance at any time.',
       line4: 'Newly earned rebates may have a waiting period before they can be transferred.'
     }
@@ -1818,7 +1818,7 @@ export default {
 
     affiliates: {
       invitesDescription: 'View site-wide inviter and invitee relationships',
-      rebatesDescription: 'View recharge orders that generated affiliate rebates',
+      rebatesDescription: 'View eligible orders that generated affiliate rebates',
       transfersDescription: 'View affiliate quota transfers into account balance',
       errors: {
         loadFailed: 'Failed to load affiliate records'
@@ -1834,7 +1834,7 @@ export default {
         affCode: 'Invite Code',
         order: 'Order',
         totalRebate: 'Total Rebate',
-        orderAmount: 'Top-up Amount',
+        orderAmount: 'Order Amount',
         payAmount: 'Paid Amount',
         rebateAmount: 'Rebate Amount',
         paymentType: 'Payment Method',
@@ -5664,15 +5664,15 @@ export default {
         },
         affiliate: {
           title: 'Affiliate (Invite Rebate)',
-          description: 'Existing users invite new ones; the inviter earns a percentage rebate on the invitee’s recharges. Disabled by default.',
+          description: 'Existing users invite new ones; the inviter earns a percentage rebate on eligible invitee orders. Disabled by default.',
           enabled: 'Enable Affiliate',
-          enabledHint: 'When off, the affiliate menu is hidden, the aff parameter is ignored at signup, and new recharges generate no rebate. Existing rebate balances can still be transferred.',
+          enabledHint: 'When off, the affiliate menu is hidden, the aff parameter is ignored at signup, and new eligible orders generate no rebate. Existing rebate balances can still be transferred.',
           rebateRate: 'Global Rebate Rate',
-          rebateRateHint: 'Default percentage given back to the inviter on recharges (0-100, e.g. 10 = 10%).',
+          rebateRateHint: 'Default invite rebate percentage (0-100, e.g. 10 = 10%).',
           freezeHours: 'Rebate Freeze Period (hours)',
-          freezeHoursDesc: 'New rebates will be frozen for this period before becoming available for withdrawal. 0 = no freeze.',
+          freezeHoursDesc: 'New rebates stay frozen for this period before they can be transferred to balance. 168 = 7 days, 0 = no freeze.',
           durationDays: 'Rebate Duration (days)',
-          durationDaysDesc: 'Rebate relationship expires after this many days since invitee registration. 0 = permanent.',
+          durationDaysDesc: 'Eligible invitee orders participate in rebates for this many days after registration. 0 = permanent.',
           perInviteeCap: 'Per-Invitee Rebate Cap',
           perInviteeCapDesc: 'Maximum total rebate from a single invitee. 0 = no limit.',
           customUsers: {
@@ -5884,7 +5884,7 @@ export default {
         defaultBalanceHint: 'Initial balance for new users',
         affiliateRebateRate: 'Affiliate Rebate Rate',
         affiliateRebateRateHint:
-          'Rebate percentage credited to inviter after recharge (0-100%, e.g. 10 means 10%)',
+          'Invite rebate percentage (0-100%, e.g. 10 means 10%)',
         defaultConcurrency: 'Default Concurrency',
         defaultConcurrencyHint: 'Maximum concurrent requests for new users',
         defaultUserRpmLimit: 'Default User RPM Limit',
