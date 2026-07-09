@@ -429,6 +429,7 @@ export default {
     groups: '分组管理',
     channels: '渠道管理',
     availableChannels: '可用渠道',
+    modelMarketplace: '模型广场',
     subscriptions: '订阅管理',
     accounts: '账号管理',
     proxies: 'IP管理',
@@ -1154,6 +1155,28 @@ export default {
       unitPerMillion: '/ 1M token',
       unitPerRequest: '/ 次'
     }
+  },
+
+  modelMarketplace: {
+    kicker: 'Model Marketplace',
+    title: '模型广场',
+    description: '按模型浏览当前可用能力、分组权限和计费价格，快速找到适合你的 Claude、GPT、Gemini 等模型。',
+    refresh: '刷新',
+    totalModels: '模型总数',
+    searchPlaceholder: '搜索模型、渠道或分组...',
+    allGroups: '全部分组',
+    allPlatforms: '全部平台',
+    showRatePrice: '显示倍率价格',
+    promptCaching: 'Prompt Caching',
+    input: '输入',
+    output: '输出',
+    cacheWrite: '缓存写入',
+    cacheRead: '缓存读取',
+    unitMillion: '/M',
+    unitRequest: '/次',
+    unitImage: '/张',
+    rateBadge: '倍率 {rate}x',
+    empty: '暂无匹配模型，请调整搜索、分组或平台筛选。'
   },
 
   affiliate: {

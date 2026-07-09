@@ -30,3 +30,14 @@ describe('AppSidebar header styles', () => {
     expect(sidebarBrandBlockMatch?.[0]).not.toContain('overflow: hidden;')
   })
 })
+
+describe('AppSidebar model marketplace navigation', () => {
+  it('keeps model marketplace separate from available channels', () => {
+    expect(componentSource).toContain("path: '/model-marketplace'")
+    expect(componentSource).toContain("label: t('nav.modelMarketplace')")
+    expect(componentSource).toContain("path: '/available-channels'")
+    expect(componentSource.indexOf("path: '/model-marketplace'")).toBeLessThan(
+      componentSource.indexOf("path: '/available-channels'"),
+    )
+  })
+})

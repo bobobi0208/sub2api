@@ -429,6 +429,7 @@ export default {
     groups: 'Groups',
     channels: 'Channels',
     availableChannels: 'Available Channels',
+    modelMarketplace: 'Model Marketplace',
     subscriptions: 'Subscriptions',
     accounts: 'Accounts',
     proxies: 'Proxies',
@@ -1150,6 +1151,28 @@ export default {
       unitPerMillion: '/ 1M tokens',
       unitPerRequest: '/ request'
     }
+  },
+
+  modelMarketplace: {
+    kicker: 'Model Marketplace',
+    title: 'Model Marketplace',
+    description: 'Browse available models, accessible groups, and pricing in one card-based marketplace.',
+    refresh: 'Refresh',
+    totalModels: 'Total Models',
+    searchPlaceholder: 'Search models, channels, or groups...',
+    allGroups: 'All Groups',
+    allPlatforms: 'All Platforms',
+    showRatePrice: 'Show rate-adjusted prices',
+    promptCaching: 'Prompt Caching',
+    input: 'Input',
+    output: 'Output',
+    cacheWrite: 'Cache Write',
+    cacheRead: 'Cache Read',
+    unitMillion: '/M',
+    unitRequest: '/request',
+    unitImage: '/image',
+    rateBadge: '{rate}x rate',
+    empty: 'No matching models. Try changing the search, group, or platform filter.'
   },
 
   affiliate: {
