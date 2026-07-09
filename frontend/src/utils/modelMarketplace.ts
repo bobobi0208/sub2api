@@ -33,6 +33,9 @@ export interface ModelMarketplaceData {
 
 export type MarketplaceGroupFilter = 'all' | number
 
+const MARKETPLACE_PLATFORM_ORDER = ['anthropic', 'openai', 'gemini', 'antigravity', 'grok']
+const FEATURED_PLATFORM_LIMIT = 3
+
 export type MarketplacePriceKey =
   | 'input_price'
   | 'output_price'
@@ -129,6 +132,12 @@ export function getMarketplacePrice(
   return effective ? roundPrice(value * effective.rate) : value
 }
 
+export function getFeaturedPlatformStats(
+  platforms: MarketplacePlatformStat[],
+): MarketplacePlatformStat[] {
+  return platforms.slice(0, FEATURED_PLATFORM_LIMIT)
+}
+
 function toMarketplaceGroup(
   group: UserAvailableGroup,
   userGroupRates: Record<number, number>,
@@ -167,7 +176,8 @@ function mergeGroups(
 }
 
 function compareCards(a: MarketplaceModelCard, b: MarketplaceModelCard): number {
-  if (a.platform !== b.platform) return a.platform.localeCompare(b.platform)
+  const platformResult = comparePlatforms(a.platform, b.platform)
+  if (platformResult !== 0) return platformResult
   return a.name.localeCompare(b.name)
 }
 
@@ -184,6 +194,15 @@ function buildPlatformStats(cards: MarketplaceModelCard[]): MarketplacePlatformS
     .map(([platform, count]) => ({ platform, count }))
     .sort((a, b) => {
       if (a.count !== b.count) return b.count - a.count
-      return a.platform.localeCompare(b.platform)
+      return comparePlatforms(a.platform, b.platform)
     })
+}
+
+function comparePlatforms(a: string, b: string): number {
+  const ai = MARKETPLACE_PLATFORM_ORDER.indexOf(a)
+  const bi = MARKETPLACE_PLATFORM_ORDER.indexOf(b)
+  if (ai === -1 && bi === -1) return a.localeCompare(b)
+  if (ai === -1) return 1
+  if (bi === -1) return -1
+  return ai - bi
 }

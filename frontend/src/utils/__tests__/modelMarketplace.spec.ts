@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   buildModelMarketplace,
   getCardEffectiveRate,
+  getFeaturedPlatformStats,
   getMarketplacePrice,
 } from '../modelMarketplace'
 import type { UserAvailableChannel } from '@/api/channels'
@@ -78,6 +79,35 @@ const channels: UserAvailableChannel[] = [
           },
         ],
       },
+      {
+        platform: 'gemini',
+        groups: [
+          {
+            id: 5,
+            name: 'Gemini',
+            platform: 'gemini',
+            subscription_type: 'standard',
+            rate_multiplier: 0.5,
+            is_exclusive: false,
+          },
+        ],
+        supported_models: [
+          {
+            name: 'gemini-2.5-pro',
+            platform: 'gemini',
+            pricing: {
+              billing_mode: 'token',
+              input_price: 0.00000125,
+              output_price: 0.00001,
+              cache_write_price: null,
+              cache_read_price: 0.00000031,
+              image_output_price: null,
+              per_request_price: null,
+              intervals: [],
+            },
+          },
+        ],
+      },
     ],
   },
   {
@@ -124,14 +154,26 @@ describe('buildModelMarketplace', () => {
     expect(result.cards.map((card) => `${card.platform}:${card.name}`)).toEqual([
       'anthropic:claude-opus-4',
       'openai:gpt-4.1',
+      'gemini:gemini-2.5-pro',
     ])
     expect(result.cards[0].groups.map((group) => group.id)).toEqual([1, 2, 4])
-    expect(result.groups.map((group) => group.id)).toEqual([1, 2, 3, 4])
+    expect(result.groups.map((group) => group.id)).toEqual([1, 2, 3, 5, 4])
     expect(result.platforms).toEqual([
       { platform: 'anthropic', count: 1 },
       { platform: 'openai', count: 1 },
+      { platform: 'gemini', count: 1 },
     ])
-    expect(result.totalModels).toBe(2)
+    expect(result.totalModels).toBe(3)
+  })
+
+  it('features Gemini next to Claude and GPT in the marketplace summary', () => {
+    const result = buildModelMarketplace(channels)
+
+    expect(getFeaturedPlatformStats(result.platforms).map((stat) => stat.platform)).toEqual([
+      'anthropic',
+      'openai',
+      'gemini',
+    ])
   })
 
   it('uses user group rates before group defaults when calculating displayed prices', () => {

@@ -26,7 +26,7 @@
           </button>
         </section>
 
-        <section class="grid gap-4 md:grid-cols-3">
+        <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <div class="market-stat-card">
             <div class="market-stat-icon bg-violet-100 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300">
               <Icon name="cube" size="lg" />
@@ -247,6 +247,7 @@ import type { GroupPlatform } from '@/types'
 import {
   buildModelMarketplace,
   getCardEffectiveRate,
+  getFeaturedPlatformStats,
   getMarketplacePrice,
   type MarketplaceGroupFilter,
   type MarketplaceModelCard,
@@ -296,7 +297,7 @@ const selectedGroupId = computed<MarketplaceGroupFilter>(() => {
 
 const marketplace = computed(() => buildModelMarketplace(channels.value, userGroupRates.value))
 
-const topPlatformStats = computed(() => marketplace.value.platforms.slice(0, 2))
+const topPlatformStats = computed(() => getFeaturedPlatformStats(marketplace.value.platforms))
 
 const filteredByGroup = computed(() => {
   if (selectedGroupId.value === 'all') return marketplace.value.cards
