@@ -130,6 +130,9 @@ type CreateGroupRequest struct {
 	RPMLimit int `json:"rpm_limit"`
 	// 从指定分组复制账号（创建后自动绑定）
 	CopyAccountsFromGroupIDs []int64 `json:"copy_accounts_from_group_ids"`
+	// 分组分类（下拉分段展示）与推荐标签。合法性由 service 层白名单归一化兜底。
+	Category       string `json:"category"`
+	Recommendation string `json:"recommendation"`
 }
 
 // UpdateGroupRequest represents update group request
@@ -183,6 +186,11 @@ type UpdateGroupRequest struct {
 	RPMLimit *int `json:"rpm_limit"`
 	// 从指定分组复制账号（同步操作：先清空当前分组的账号绑定，再绑定源分组的账号）
 	CopyAccountsFromGroupIDs []int64 `json:"copy_accounts_from_group_ids"`
+	// 分组分类（下拉分段展示）与推荐标签；nil 表示不修改。
+	// recommendation 允许空串（=清除标签），合法性由 service 层白名单归一化兜底，
+	// 故此处不加 oneof 绑定（指针非 nil 的空串会被 omitempty 漏过而误判）。
+	Category       *string `json:"category"`
+	Recommendation *string `json:"recommendation"`
 }
 
 // List handles listing all groups with pagination
@@ -349,6 +357,8 @@ func (h *GroupHandler) Create(c *gin.Context) {
 		ModelsListConfig:                req.ModelsListConfig,
 		RPMLimit:                        req.RPMLimit,
 		CopyAccountsFromGroupIDs:        req.CopyAccountsFromGroupIDs,
+		Category:                        req.Category,
+		Recommendation:                  req.Recommendation,
 	})
 	if err != nil {
 		response.ErrorFrom(c, err)
@@ -417,6 +427,8 @@ func (h *GroupHandler) Update(c *gin.Context) {
 		ModelsListConfig:                req.ModelsListConfig,
 		RPMLimit:                        req.RPMLimit,
 		CopyAccountsFromGroupIDs:        req.CopyAccountsFromGroupIDs,
+		Category:                        req.Category,
+		Recommendation:                  req.Recommendation,
 	})
 	if err != nil {
 		response.ErrorFrom(c, err)

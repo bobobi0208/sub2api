@@ -1,5 +1,13 @@
 <template>
   <AppLayout>
+    <!-- 分组分类自动补全候选(创建/编辑表单共用) -->
+    <datalist id="group-category-suggestions">
+      <option
+        v-for="c in categorySuggestions"
+        :key="c"
+        :value="c"
+      />
+    </datalist>
     <TablePageLayout>
       <template #filters>
         <div
@@ -122,10 +130,30 @@
           default-sort-order="asc"
           @sort="handleSort"
         >
-          <template #cell-name="{ value }">
-            <span class="font-medium text-gray-900 dark:text-white">{{
-              value
-            }}</span>
+          <template #cell-name="{ value, row }">
+            <div class="flex flex-col gap-1">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="font-medium text-gray-900 dark:text-white">{{
+                  value
+                }}</span>
+                <span
+                  v-if="getRecommendationMeta(row.recommendation)"
+                  :class="[
+                    'inline-flex items-center gap-0.5 whitespace-nowrap rounded-full px-1.5 py-0.5 text-[10px] font-semibold',
+                    getRecommendationMeta(row.recommendation)!.badgeClass,
+                  ]"
+                >
+                  <span>{{ getRecommendationMeta(row.recommendation)!.icon }}</span>
+                  {{ t(getRecommendationMeta(row.recommendation)!.i18nKey) }}
+                </span>
+              </div>
+              <span
+                v-if="row.category"
+                class="inline-flex w-fit items-center rounded bg-gray-100 px-1.5 py-0.5 text-[11px] text-gray-500 dark:bg-dark-700 dark:text-gray-400"
+              >
+                {{ row.category }}
+              </span>
+            </div>
           </template>
 
           <template #cell-platform="{ value }">
@@ -444,6 +472,45 @@
             class="input"
             :placeholder="t('admin.groups.optionalDescription')"
           ></textarea>
+        </div>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="input-label">{{
+              t("admin.groups.form.category")
+            }}</label>
+            <input
+              v-model="createForm.category"
+              type="text"
+              class="input"
+              list="group-category-suggestions"
+              maxlength="50"
+              :placeholder="t('admin.groups.categoryPlaceholder')"
+            />
+            <p class="input-hint">{{ t("admin.groups.categoryHint") }}</p>
+          </div>
+          <div>
+            <label class="input-label">{{
+              t("admin.groups.form.recommendation")
+            }}</label>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="r in GROUP_RECOMMENDATIONS"
+                :key="r.value"
+                type="button"
+                @click="createForm.recommendation = r.value"
+                :class="[
+                  'inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
+                  createForm.recommendation === r.value
+                    ? r.chipActiveClass
+                    : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300 dark:hover:border-dark-500',
+                ]"
+              >
+                <span v-if="r.icon">{{ r.icon }}</span>
+                {{ t(r.i18nKey) }}
+              </button>
+            </div>
+            <p class="input-hint">{{ t("admin.groups.recommendationHint") }}</p>
+          </div>
         </div>
         <div>
           <label class="input-label">{{
@@ -1920,6 +1987,45 @@
             rows="3"
             class="input"
           ></textarea>
+        </div>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="input-label">{{
+              t("admin.groups.form.category")
+            }}</label>
+            <input
+              v-model="editForm.category"
+              type="text"
+              class="input"
+              list="group-category-suggestions"
+              maxlength="50"
+              :placeholder="t('admin.groups.categoryPlaceholder')"
+            />
+            <p class="input-hint">{{ t("admin.groups.categoryHint") }}</p>
+          </div>
+          <div>
+            <label class="input-label">{{
+              t("admin.groups.form.recommendation")
+            }}</label>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="r in GROUP_RECOMMENDATIONS"
+                :key="r.value"
+                type="button"
+                @click="editForm.recommendation = r.value"
+                :class="[
+                  'inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
+                  editForm.recommendation === r.value
+                    ? r.chipActiveClass
+                    : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300 dark:hover:border-dark-500',
+                ]"
+              >
+                <span v-if="r.icon">{{ r.icon }}</span>
+                {{ t(r.i18nKey) }}
+              </button>
+            </div>
+            <p class="input-hint">{{ t("admin.groups.recommendationHint") }}</p>
+          </div>
         </div>
         <div>
           <label class="input-label">{{
@@ -3491,6 +3597,11 @@ import { useAppStore } from "@/stores/app";
 import { useOnboardingStore } from "@/stores/onboarding";
 import { adminAPI } from "@/api/admin";
 import type { AdminGroup, GroupPlatform, SubscriptionType } from "@/types";
+import {
+  GROUP_RECOMMENDATIONS,
+  getRecommendationMeta,
+  type GroupRecommendation,
+} from "@/utils/groupRecommendation";
 import type { Column } from "@/components/common/types";
 import AppLayout from "@/components/layout/AppLayout.vue";
 import TablePageLayout from "@/components/layout/TablePageLayout.vue";
@@ -3796,6 +3907,17 @@ const copyAccountsGroupOptionsForEdit = computed(() => {
 
 const groups = ref<AdminGroup[]>([]);
 const loading = ref(false);
+
+// 分类自动补全候选:取当前已加载分组里去重后的非空分类名
+const categorySuggestions = computed(() => {
+  const set = new Set<string>();
+  for (const g of groups.value) {
+    const c = (g.category || "").trim();
+    if (c) set.add(c);
+  }
+  return Array.from(set).sort((a, b) => a.localeCompare(b));
+});
+
 type GroupUsageSummary = {
   today_cost: number;
   total_cost: number;
@@ -3865,6 +3987,8 @@ const editModelsListSelectedCount = computed(
 const createForm = reactive({
   name: "",
   description: "",
+  category: "",
+  recommendation: "" as GroupRecommendation,
   platform: "anthropic" as GroupPlatform,
   rate_multiplier: 1.0,
   is_exclusive: false,
@@ -4209,6 +4333,8 @@ const convertApiFormatToRoutingRules = async (
 const editForm = reactive({
   name: "",
   description: "",
+  category: "",
+  recommendation: "" as GroupRecommendation,
   platform: "anthropic" as GroupPlatform,
   rate_multiplier: 1.0,
   is_exclusive: false,
@@ -4594,6 +4720,8 @@ const closeCreateModal = () => {
   clearAllAccountSearchState();
   createForm.name = "";
   createForm.description = "";
+  createForm.category = "";
+  createForm.recommendation = "";
   createForm.platform = "anthropic";
   createForm.rate_multiplier = 1.0;
   createForm.is_exclusive = false;
@@ -4755,6 +4883,8 @@ const handleEdit = async (group: AdminGroup) => {
   editingGroup.value = group;
   editForm.name = group.name;
   editForm.description = group.description || "";
+  editForm.category = group.category || "";
+  editForm.recommendation = (group.recommendation || "") as GroupRecommendation;
   editForm.platform = group.platform;
   editForm.rate_multiplier = group.rate_multiplier;
   editForm.is_exclusive = group.is_exclusive;

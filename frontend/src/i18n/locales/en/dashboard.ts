@@ -91,6 +91,7 @@ export default {
     noGroup: 'No group',
     searchGroup: 'Search groups...',
     noGroupFound: 'No groups found',
+    uncategorized: 'Uncategorized',
     created: 'Created',
     copyToClipboard: 'Copy to clipboard',
     copied: 'Copied!',

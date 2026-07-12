@@ -245,6 +245,16 @@ func SortOrder(v int) predicate.Group {
 	return predicate.Group(sql.FieldEQ(FieldSortOrder, v))
 }
 
+// Category applies equality check predicate on the "category" field. It's identical to CategoryEQ.
+func Category(v string) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldCategory, v))
+}
+
+// Recommendation applies equality check predicate on the "recommendation" field. It's identical to RecommendationEQ.
+func Recommendation(v string) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldRecommendation, v))
+}
+
 // AllowMessagesDispatch applies equality check predicate on the "allow_messages_dispatch" field. It's identical to AllowMessagesDispatchEQ.
 func AllowMessagesDispatch(v bool) predicate.Group {
 	return predicate.Group(sql.FieldEQ(FieldAllowMessagesDispatch, v))
@@ -1833,6 +1843,136 @@ func SortOrderLT(v int) predicate.Group {
 // SortOrderLTE applies the LTE predicate on the "sort_order" field.
 func SortOrderLTE(v int) predicate.Group {
 	return predicate.Group(sql.FieldLTE(FieldSortOrder, v))
+}
+
+// CategoryEQ applies the EQ predicate on the "category" field.
+func CategoryEQ(v string) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldCategory, v))
+}
+
+// CategoryNEQ applies the NEQ predicate on the "category" field.
+func CategoryNEQ(v string) predicate.Group {
+	return predicate.Group(sql.FieldNEQ(FieldCategory, v))
+}
+
+// CategoryIn applies the In predicate on the "category" field.
+func CategoryIn(vs ...string) predicate.Group {
+	return predicate.Group(sql.FieldIn(FieldCategory, vs...))
+}
+
+// CategoryNotIn applies the NotIn predicate on the "category" field.
+func CategoryNotIn(vs ...string) predicate.Group {
+	return predicate.Group(sql.FieldNotIn(FieldCategory, vs...))
+}
+
+// CategoryGT applies the GT predicate on the "category" field.
+func CategoryGT(v string) predicate.Group {
+	return predicate.Group(sql.FieldGT(FieldCategory, v))
+}
+
+// CategoryGTE applies the GTE predicate on the "category" field.
+func CategoryGTE(v string) predicate.Group {
+	return predicate.Group(sql.FieldGTE(FieldCategory, v))
+}
+
+// CategoryLT applies the LT predicate on the "category" field.
+func CategoryLT(v string) predicate.Group {
+	return predicate.Group(sql.FieldLT(FieldCategory, v))
+}
+
+// CategoryLTE applies the LTE predicate on the "category" field.
+func CategoryLTE(v string) predicate.Group {
+	return predicate.Group(sql.FieldLTE(FieldCategory, v))
+}
+
+// CategoryContains applies the Contains predicate on the "category" field.
+func CategoryContains(v string) predicate.Group {
+	return predicate.Group(sql.FieldContains(FieldCategory, v))
+}
+
+// CategoryHasPrefix applies the HasPrefix predicate on the "category" field.
+func CategoryHasPrefix(v string) predicate.Group {
+	return predicate.Group(sql.FieldHasPrefix(FieldCategory, v))
+}
+
+// CategoryHasSuffix applies the HasSuffix predicate on the "category" field.
+func CategoryHasSuffix(v string) predicate.Group {
+	return predicate.Group(sql.FieldHasSuffix(FieldCategory, v))
+}
+
+// CategoryEqualFold applies the EqualFold predicate on the "category" field.
+func CategoryEqualFold(v string) predicate.Group {
+	return predicate.Group(sql.FieldEqualFold(FieldCategory, v))
+}
+
+// CategoryContainsFold applies the ContainsFold predicate on the "category" field.
+func CategoryContainsFold(v string) predicate.Group {
+	return predicate.Group(sql.FieldContainsFold(FieldCategory, v))
+}
+
+// RecommendationEQ applies the EQ predicate on the "recommendation" field.
+func RecommendationEQ(v string) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldRecommendation, v))
+}
+
+// RecommendationNEQ applies the NEQ predicate on the "recommendation" field.
+func RecommendationNEQ(v string) predicate.Group {
+	return predicate.Group(sql.FieldNEQ(FieldRecommendation, v))
+}
+
+// RecommendationIn applies the In predicate on the "recommendation" field.
+func RecommendationIn(vs ...string) predicate.Group {
+	return predicate.Group(sql.FieldIn(FieldRecommendation, vs...))
+}
+
+// RecommendationNotIn applies the NotIn predicate on the "recommendation" field.
+func RecommendationNotIn(vs ...string) predicate.Group {
+	return predicate.Group(sql.FieldNotIn(FieldRecommendation, vs...))
+}
+
+// RecommendationGT applies the GT predicate on the "recommendation" field.
+func RecommendationGT(v string) predicate.Group {
+	return predicate.Group(sql.FieldGT(FieldRecommendation, v))
+}
+
+// RecommendationGTE applies the GTE predicate on the "recommendation" field.
+func RecommendationGTE(v string) predicate.Group {
+	return predicate.Group(sql.FieldGTE(FieldRecommendation, v))
+}
+
+// RecommendationLT applies the LT predicate on the "recommendation" field.
+func RecommendationLT(v string) predicate.Group {
+	return predicate.Group(sql.FieldLT(FieldRecommendation, v))
+}
+
+// RecommendationLTE applies the LTE predicate on the "recommendation" field.
+func RecommendationLTE(v string) predicate.Group {
+	return predicate.Group(sql.FieldLTE(FieldRecommendation, v))
+}
+
+// RecommendationContains applies the Contains predicate on the "recommendation" field.
+func RecommendationContains(v string) predicate.Group {
+	return predicate.Group(sql.FieldContains(FieldRecommendation, v))
+}
+
+// RecommendationHasPrefix applies the HasPrefix predicate on the "recommendation" field.
+func RecommendationHasPrefix(v string) predicate.Group {
+	return predicate.Group(sql.FieldHasPrefix(FieldRecommendation, v))
+}
+
+// RecommendationHasSuffix applies the HasSuffix predicate on the "recommendation" field.
+func RecommendationHasSuffix(v string) predicate.Group {
+	return predicate.Group(sql.FieldHasSuffix(FieldRecommendation, v))
+}
+
+// RecommendationEqualFold applies the EqualFold predicate on the "recommendation" field.
+func RecommendationEqualFold(v string) predicate.Group {
+	return predicate.Group(sql.FieldEqualFold(FieldRecommendation, v))
+}
+
+// RecommendationContainsFold applies the ContainsFold predicate on the "recommendation" field.
+func RecommendationContainsFold(v string) predicate.Group {
+	return predicate.Group(sql.FieldContainsFold(FieldRecommendation, v))
 }
 
 // AllowMessagesDispatchEQ applies the EQ predicate on the "allow_messages_dispatch" field.

@@ -137,6 +137,11 @@ type Group struct {
 	// RPMLimit 分组级每分钟请求数上限（0 = 不限制），设置后覆盖用户级 rpm_limit。
 	RPMLimit int `json:"rpm_limit"`
 
+	// Category 分组分类（用于下拉分段展示；空表示未分类）
+	Category string `json:"category"`
+	// Recommendation 推荐标签：空/featured(主推)/value(性价比首选)
+	Recommendation string `json:"recommendation"`
+
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

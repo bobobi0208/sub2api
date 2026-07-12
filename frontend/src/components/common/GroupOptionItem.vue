@@ -5,14 +5,23 @@
       class="flex min-w-0 flex-1 flex-col items-start"
       :title="description || undefined"
     >
-      <!-- Row 1: platform badge (name bold) -->
-      <GroupBadge
-        :name="name"
-        :platform="platform"
-        :subscription-type="subscriptionType"
-        :show-rate="false"
-        class="groupOptionItemBadge"
-      />
+      <!-- Row 1: platform badge (name bold) + optional recommendation tag -->
+      <div class="flex flex-wrap items-center gap-1.5">
+        <GroupBadge
+          :name="name"
+          :platform="platform"
+          :subscription-type="subscriptionType"
+          :show-rate="false"
+          class="groupOptionItemBadge"
+        />
+        <span
+          v-if="recommendationMeta"
+          :class="['inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold', recommendationMeta.badgeClass]"
+        >
+          <span>{{ recommendationMeta.icon }}</span>
+          {{ t(recommendationMeta.i18nKey) }}
+        </span>
+      </div>
       <!-- Row 2: description with top spacing -->
       <span
         v-if="description"
@@ -65,6 +74,7 @@ import GroupBadge from './GroupBadge.vue'
 import type { SubscriptionType, GroupPlatform } from '@/types'
 import { useAppStore } from '@/stores/app'
 import { formatPeakRateWindow, serverTimezoneLabel } from '@/utils/peak-rate'
+import { getRecommendationMeta } from '@/utils/groupRecommendation'
 
 const { t } = useI18n()
 
@@ -79,6 +89,7 @@ interface Props {
   peakEnd?: string
   peakRateMultiplier?: number
   description?: string | null
+  recommendation?: string
   selected?: boolean
   showCheckmark?: boolean
 }
@@ -102,6 +113,9 @@ const hasCustomRate = computed(() => {
 })
 
 const appStore = useAppStore()
+
+// 推荐标签(主推/性价比首选)展示元数据;无标签或未知值为 null
+const recommendationMeta = computed(() => getRecommendationMeta(props.recommendation))
 
 const hasPeakRate = computed(() => {
   return Boolean(props.peakRateEnabled && props.peakStart && props.peakEnd)

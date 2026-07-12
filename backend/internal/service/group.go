@@ -13,6 +13,33 @@ import (
 type OpenAIMessagesDispatchModelConfig = domain.OpenAIMessagesDispatchModelConfig
 type GroupModelsListConfig = domain.GroupModelsListConfig
 
+// 分组推荐标签白名单。空字符串表示无标签。
+const (
+	GroupRecommendationFeatured = "featured" // 主推
+	GroupRecommendationValue    = "value"    // 性价比首选
+)
+
+// NormalizeGroupCategory 清洗分类名：去除首尾空白，按字符（rune）截断到 50（与 DB 列宽一致）。
+func NormalizeGroupCategory(category string) string {
+	c := strings.TrimSpace(category)
+	if r := []rune(c); len(r) > 50 {
+		c = string(r[:50])
+	}
+	return c
+}
+
+// NormalizeGroupRecommendation 校验推荐标签，仅接受白名单值，其余归一化为空字符串。
+func NormalizeGroupRecommendation(rec string) string {
+	switch strings.TrimSpace(rec) {
+	case GroupRecommendationFeatured:
+		return GroupRecommendationFeatured
+	case GroupRecommendationValue:
+		return GroupRecommendationValue
+	default:
+		return ""
+	}
+}
+
 type Group struct {
 	ID             int64
 	Name           string
@@ -72,6 +99,10 @@ type Group struct {
 
 	// 分组排序
 	SortOrder int
+
+	// 分组分类（下拉分段展示）与推荐标签
+	Category       string
+	Recommendation string
 
 	// OpenAI Messages 调度配置（仅 openai 平台使用）
 	AllowMessagesDispatch       bool

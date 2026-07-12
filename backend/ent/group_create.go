@@ -565,6 +565,34 @@ func (_c *GroupCreate) SetNillableSortOrder(v *int) *GroupCreate {
 	return _c
 }
 
+// SetCategory sets the "category" field.
+func (_c *GroupCreate) SetCategory(v string) *GroupCreate {
+	_c.mutation.SetCategory(v)
+	return _c
+}
+
+// SetNillableCategory sets the "category" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableCategory(v *string) *GroupCreate {
+	if v != nil {
+		_c.SetCategory(*v)
+	}
+	return _c
+}
+
+// SetRecommendation sets the "recommendation" field.
+func (_c *GroupCreate) SetRecommendation(v string) *GroupCreate {
+	_c.mutation.SetRecommendation(v)
+	return _c
+}
+
+// SetNillableRecommendation sets the "recommendation" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableRecommendation(v *string) *GroupCreate {
+	if v != nil {
+		_c.SetRecommendation(*v)
+	}
+	return _c
+}
+
 // SetAllowMessagesDispatch sets the "allow_messages_dispatch" field.
 func (_c *GroupCreate) SetAllowMessagesDispatch(v bool) *GroupCreate {
 	_c.mutation.SetAllowMessagesDispatch(v)
@@ -896,6 +924,14 @@ func (_c *GroupCreate) defaults() error {
 		v := group.DefaultSortOrder
 		_c.mutation.SetSortOrder(v)
 	}
+	if _, ok := _c.mutation.Category(); !ok {
+		v := group.DefaultCategory
+		_c.mutation.SetCategory(v)
+	}
+	if _, ok := _c.mutation.Recommendation(); !ok {
+		v := group.DefaultRecommendation
+		_c.mutation.SetRecommendation(v)
+	}
 	if _, ok := _c.mutation.AllowMessagesDispatch(); !ok {
 		v := group.DefaultAllowMessagesDispatch
 		_c.mutation.SetAllowMessagesDispatch(v)
@@ -1036,6 +1072,22 @@ func (_c *GroupCreate) check() error {
 	}
 	if _, ok := _c.mutation.SortOrder(); !ok {
 		return &ValidationError{Name: "sort_order", err: errors.New(`ent: missing required field "Group.sort_order"`)}
+	}
+	if _, ok := _c.mutation.Category(); !ok {
+		return &ValidationError{Name: "category", err: errors.New(`ent: missing required field "Group.category"`)}
+	}
+	if v, ok := _c.mutation.Category(); ok {
+		if err := group.CategoryValidator(v); err != nil {
+			return &ValidationError{Name: "category", err: fmt.Errorf(`ent: validator failed for field "Group.category": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.Recommendation(); !ok {
+		return &ValidationError{Name: "recommendation", err: errors.New(`ent: missing required field "Group.recommendation"`)}
+	}
+	if v, ok := _c.mutation.Recommendation(); ok {
+		if err := group.RecommendationValidator(v); err != nil {
+			return &ValidationError{Name: "recommendation", err: fmt.Errorf(`ent: validator failed for field "Group.recommendation": %w`, err)}
+		}
 	}
 	if _, ok := _c.mutation.AllowMessagesDispatch(); !ok {
 		return &ValidationError{Name: "allow_messages_dispatch", err: errors.New(`ent: missing required field "Group.allow_messages_dispatch"`)}
@@ -1249,6 +1301,14 @@ func (_c *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.SortOrder(); ok {
 		_spec.SetField(group.FieldSortOrder, field.TypeInt, value)
 		_node.SortOrder = value
+	}
+	if value, ok := _c.mutation.Category(); ok {
+		_spec.SetField(group.FieldCategory, field.TypeString, value)
+		_node.Category = value
+	}
+	if value, ok := _c.mutation.Recommendation(); ok {
+		_spec.SetField(group.FieldRecommendation, field.TypeString, value)
+		_node.Recommendation = value
 	}
 	if value, ok := _c.mutation.AllowMessagesDispatch(); ok {
 		_spec.SetField(group.FieldAllowMessagesDispatch, field.TypeBool, value)
@@ -2097,6 +2157,30 @@ func (u *GroupUpsert) UpdateSortOrder() *GroupUpsert {
 // AddSortOrder adds v to the "sort_order" field.
 func (u *GroupUpsert) AddSortOrder(v int) *GroupUpsert {
 	u.Add(group.FieldSortOrder, v)
+	return u
+}
+
+// SetCategory sets the "category" field.
+func (u *GroupUpsert) SetCategory(v string) *GroupUpsert {
+	u.Set(group.FieldCategory, v)
+	return u
+}
+
+// UpdateCategory sets the "category" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateCategory() *GroupUpsert {
+	u.SetExcluded(group.FieldCategory)
+	return u
+}
+
+// SetRecommendation sets the "recommendation" field.
+func (u *GroupUpsert) SetRecommendation(v string) *GroupUpsert {
+	u.Set(group.FieldRecommendation, v)
+	return u
+}
+
+// UpdateRecommendation sets the "recommendation" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateRecommendation() *GroupUpsert {
+	u.SetExcluded(group.FieldRecommendation)
 	return u
 }
 
@@ -3009,6 +3093,34 @@ func (u *GroupUpsertOne) AddSortOrder(v int) *GroupUpsertOne {
 func (u *GroupUpsertOne) UpdateSortOrder() *GroupUpsertOne {
 	return u.Update(func(s *GroupUpsert) {
 		s.UpdateSortOrder()
+	})
+}
+
+// SetCategory sets the "category" field.
+func (u *GroupUpsertOne) SetCategory(v string) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetCategory(v)
+	})
+}
+
+// UpdateCategory sets the "category" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateCategory() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateCategory()
+	})
+}
+
+// SetRecommendation sets the "recommendation" field.
+func (u *GroupUpsertOne) SetRecommendation(v string) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetRecommendation(v)
+	})
+}
+
+// UpdateRecommendation sets the "recommendation" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateRecommendation() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateRecommendation()
 	})
 }
 
@@ -4102,6 +4214,34 @@ func (u *GroupUpsertBulk) AddSortOrder(v int) *GroupUpsertBulk {
 func (u *GroupUpsertBulk) UpdateSortOrder() *GroupUpsertBulk {
 	return u.Update(func(s *GroupUpsert) {
 		s.UpdateSortOrder()
+	})
+}
+
+// SetCategory sets the "category" field.
+func (u *GroupUpsertBulk) SetCategory(v string) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetCategory(v)
+	})
+}
+
+// UpdateCategory sets the "category" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateCategory() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateCategory()
+	})
+}
+
+// SetRecommendation sets the "recommendation" field.
+func (u *GroupUpsertBulk) SetRecommendation(v string) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetRecommendation(v)
+	})
+}
+
+// UpdateRecommendation sets the "recommendation" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateRecommendation() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateRecommendation()
 	})
 }
 

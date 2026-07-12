@@ -241,6 +241,9 @@ type CreateGroupInput struct {
 	RPMLimit int
 	// 从指定分组复制账号（创建分组后在同一事务内绑定）
 	CopyAccountsFromGroupIDs []int64
+	// 分组分类（下拉分段展示）与推荐标签
+	Category       string
+	Recommendation string
 }
 
 type UpdateGroupInput struct {
@@ -295,6 +298,9 @@ type UpdateGroupInput struct {
 	RPMLimit *int
 	// 从指定分组复制账号（同步操作：先清空当前分组的账号绑定，再绑定源分组的账号）
 	CopyAccountsFromGroupIDs []int64
+	// 分组分类（下拉分段展示）与推荐标签，nil 表示不修改
+	Category       *string
+	Recommendation *string
 }
 
 type CreateAccountInput struct {

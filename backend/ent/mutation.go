@@ -20854,6 +20854,8 @@ type GroupMutation struct {
 	appendsupported_model_scopes            []string
 	sort_order                              *int
 	addsort_order                           *int
+	category                                *string
+	recommendation                          *string
 	allow_messages_dispatch                 *bool
 	require_oauth_only                      *bool
 	require_privacy_set                     *bool
@@ -23012,6 +23014,78 @@ func (m *GroupMutation) ResetSortOrder() {
 	m.addsort_order = nil
 }
 
+// SetCategory sets the "category" field.
+func (m *GroupMutation) SetCategory(s string) {
+	m.category = &s
+}
+
+// Category returns the value of the "category" field in the mutation.
+func (m *GroupMutation) Category() (r string, exists bool) {
+	v := m.category
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCategory returns the old "category" field's value of the Group entity.
+// If the Group object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupMutation) OldCategory(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCategory is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCategory requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCategory: %w", err)
+	}
+	return oldValue.Category, nil
+}
+
+// ResetCategory resets all changes to the "category" field.
+func (m *GroupMutation) ResetCategory() {
+	m.category = nil
+}
+
+// SetRecommendation sets the "recommendation" field.
+func (m *GroupMutation) SetRecommendation(s string) {
+	m.recommendation = &s
+}
+
+// Recommendation returns the value of the "recommendation" field in the mutation.
+func (m *GroupMutation) Recommendation() (r string, exists bool) {
+	v := m.recommendation
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecommendation returns the old "recommendation" field's value of the Group entity.
+// If the Group object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupMutation) OldRecommendation(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecommendation is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecommendation requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecommendation: %w", err)
+	}
+	return oldValue.Recommendation, nil
+}
+
+// ResetRecommendation resets all changes to the "recommendation" field.
+func (m *GroupMutation) ResetRecommendation() {
+	m.recommendation = nil
+}
+
 // SetAllowMessagesDispatch sets the "allow_messages_dispatch" field.
 func (m *GroupMutation) SetAllowMessagesDispatch(b bool) {
 	m.allow_messages_dispatch = &b
@@ -23642,7 +23716,7 @@ func (m *GroupMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GroupMutation) Fields() []string {
-	fields := make([]string, 0, 47)
+	fields := make([]string, 0, 49)
 	if m.created_at != nil {
 		fields = append(fields, group.FieldCreatedAt)
 	}
@@ -23763,6 +23837,12 @@ func (m *GroupMutation) Fields() []string {
 	if m.sort_order != nil {
 		fields = append(fields, group.FieldSortOrder)
 	}
+	if m.category != nil {
+		fields = append(fields, group.FieldCategory)
+	}
+	if m.recommendation != nil {
+		fields = append(fields, group.FieldRecommendation)
+	}
 	if m.allow_messages_dispatch != nil {
 		fields = append(fields, group.FieldAllowMessagesDispatch)
 	}
@@ -23872,6 +23952,10 @@ func (m *GroupMutation) Field(name string) (ent.Value, bool) {
 		return m.SupportedModelScopes()
 	case group.FieldSortOrder:
 		return m.SortOrder()
+	case group.FieldCategory:
+		return m.Category()
+	case group.FieldRecommendation:
+		return m.Recommendation()
 	case group.FieldAllowMessagesDispatch:
 		return m.AllowMessagesDispatch()
 	case group.FieldRequireOauthOnly:
@@ -23975,6 +24059,10 @@ func (m *GroupMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldSupportedModelScopes(ctx)
 	case group.FieldSortOrder:
 		return m.OldSortOrder(ctx)
+	case group.FieldCategory:
+		return m.OldCategory(ctx)
+	case group.FieldRecommendation:
+		return m.OldRecommendation(ctx)
 	case group.FieldAllowMessagesDispatch:
 		return m.OldAllowMessagesDispatch(ctx)
 	case group.FieldRequireOauthOnly:
@@ -24277,6 +24365,20 @@ func (m *GroupMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSortOrder(v)
+		return nil
+	case group.FieldCategory:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCategory(v)
+		return nil
+	case group.FieldRecommendation:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecommendation(v)
 		return nil
 	case group.FieldAllowMessagesDispatch:
 		v, ok := value.(bool)
@@ -24825,6 +24927,12 @@ func (m *GroupMutation) ResetField(name string) error {
 		return nil
 	case group.FieldSortOrder:
 		m.ResetSortOrder()
+		return nil
+	case group.FieldCategory:
+		m.ResetCategory()
+		return nil
+	case group.FieldRecommendation:
+		m.ResetRecommendation()
 		return nil
 	case group.FieldAllowMessagesDispatch:
 		m.ResetAllowMessagesDispatch()

@@ -1063,34 +1063,46 @@ func init() {
 	groupDescSortOrder := groupFields[36].Descriptor()
 	// group.DefaultSortOrder holds the default value on creation for the sort_order field.
 	group.DefaultSortOrder = groupDescSortOrder.Default.(int)
+	// groupDescCategory is the schema descriptor for category field.
+	groupDescCategory := groupFields[37].Descriptor()
+	// group.DefaultCategory holds the default value on creation for the category field.
+	group.DefaultCategory = groupDescCategory.Default.(string)
+	// group.CategoryValidator is a validator for the "category" field. It is called by the builders before save.
+	group.CategoryValidator = groupDescCategory.Validators[0].(func(string) error)
+	// groupDescRecommendation is the schema descriptor for recommendation field.
+	groupDescRecommendation := groupFields[38].Descriptor()
+	// group.DefaultRecommendation holds the default value on creation for the recommendation field.
+	group.DefaultRecommendation = groupDescRecommendation.Default.(string)
+	// group.RecommendationValidator is a validator for the "recommendation" field. It is called by the builders before save.
+	group.RecommendationValidator = groupDescRecommendation.Validators[0].(func(string) error)
 	// groupDescAllowMessagesDispatch is the schema descriptor for allow_messages_dispatch field.
-	groupDescAllowMessagesDispatch := groupFields[37].Descriptor()
+	groupDescAllowMessagesDispatch := groupFields[39].Descriptor()
 	// group.DefaultAllowMessagesDispatch holds the default value on creation for the allow_messages_dispatch field.
 	group.DefaultAllowMessagesDispatch = groupDescAllowMessagesDispatch.Default.(bool)
 	// groupDescRequireOauthOnly is the schema descriptor for require_oauth_only field.
-	groupDescRequireOauthOnly := groupFields[38].Descriptor()
+	groupDescRequireOauthOnly := groupFields[40].Descriptor()
 	// group.DefaultRequireOauthOnly holds the default value on creation for the require_oauth_only field.
 	group.DefaultRequireOauthOnly = groupDescRequireOauthOnly.Default.(bool)
 	// groupDescRequirePrivacySet is the schema descriptor for require_privacy_set field.
-	groupDescRequirePrivacySet := groupFields[39].Descriptor()
+	groupDescRequirePrivacySet := groupFields[41].Descriptor()
 	// group.DefaultRequirePrivacySet holds the default value on creation for the require_privacy_set field.
 	group.DefaultRequirePrivacySet = groupDescRequirePrivacySet.Default.(bool)
 	// groupDescDefaultMappedModel is the schema descriptor for default_mapped_model field.
-	groupDescDefaultMappedModel := groupFields[40].Descriptor()
+	groupDescDefaultMappedModel := groupFields[42].Descriptor()
 	// group.DefaultDefaultMappedModel holds the default value on creation for the default_mapped_model field.
 	group.DefaultDefaultMappedModel = groupDescDefaultMappedModel.Default.(string)
 	// group.DefaultMappedModelValidator is a validator for the "default_mapped_model" field. It is called by the builders before save.
 	group.DefaultMappedModelValidator = groupDescDefaultMappedModel.Validators[0].(func(string) error)
 	// groupDescMessagesDispatchModelConfig is the schema descriptor for messages_dispatch_model_config field.
-	groupDescMessagesDispatchModelConfig := groupFields[41].Descriptor()
+	groupDescMessagesDispatchModelConfig := groupFields[43].Descriptor()
 	// group.DefaultMessagesDispatchModelConfig holds the default value on creation for the messages_dispatch_model_config field.
 	group.DefaultMessagesDispatchModelConfig = groupDescMessagesDispatchModelConfig.Default.(domain.OpenAIMessagesDispatchModelConfig)
 	// groupDescModelsListConfig is the schema descriptor for models_list_config field.
-	groupDescModelsListConfig := groupFields[42].Descriptor()
+	groupDescModelsListConfig := groupFields[44].Descriptor()
 	// group.DefaultModelsListConfig holds the default value on creation for the models_list_config field.
 	group.DefaultModelsListConfig = groupDescModelsListConfig.Default.(domain.GroupModelsListConfig)
 	// groupDescRpmLimit is the schema descriptor for rpm_limit field.
-	groupDescRpmLimit := groupFields[43].Descriptor()
+	groupDescRpmLimit := groupFields[45].Descriptor()
 	// group.DefaultRpmLimit holds the default value on creation for the rpm_limit field.
 	group.DefaultRpmLimit = groupDescRpmLimit.Default.(int)
 	idempotencyrecordMixin := schema.IdempotencyRecord{}.Mixin()

@@ -183,6 +183,16 @@ func (Group) Fields() []ent.Field {
 			Default(0).
 			Comment("分组显示排序，数值越小越靠前"),
 
+		// 分组分类与推荐标签 (added by migration 174)
+		field.String("category").
+			MaxLen(50).
+			Default("").
+			Comment("分组分类，用于 API 密钥创建下拉分段展示；空表示未分类"),
+		field.String("recommendation").
+			MaxLen(20).
+			Default("").
+			Comment("推荐标签：空/featured(主推)/value(性价比首选)"),
+
 		// OpenAI Messages 调度配置 (added by migration 069)
 		field.Bool("allow_messages_dispatch").
 			Default(false).

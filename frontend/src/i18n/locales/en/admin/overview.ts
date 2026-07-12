@@ -798,6 +798,8 @@ export default {
       form: {
         name: 'Name',
         description: 'Description',
+        category: 'Category',
+        recommendation: 'Recommendation',
         platform: 'Platform',
         rateMultiplier: 'Rate Multiplier',
         status: 'Status',
@@ -827,6 +829,9 @@ export default {
       },
       enterGroupName: 'Enter group name',
       optionalDescription: 'Optional description',
+      categoryPlaceholder: 'e.g. GPT series, Claude Code',
+      categoryHint: 'Groups sharing a category are shown together in the API key dropdown; empty = uncategorized',
+      recommendationHint: 'Shows a colored tag in the group dropdown when creating a key',
       platformHint: 'Select the platform this group is associated with',
       platformNotEditable: 'Platform cannot be changed after creation',
       saving: 'Saving...',

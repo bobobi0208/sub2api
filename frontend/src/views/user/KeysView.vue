@@ -464,7 +464,7 @@
           <label class="input-label">{{ t('keys.groupLabel') }}</label>
           <Select
             v-model="formData.group_id"
-            :options="groupOptions"
+            :options="sectionedGroupOptions"
             :placeholder="t('keys.selectGroup')"
             :searchable="true"
             :search-placeholder="t('keys.searchGroup')"
@@ -486,7 +486,18 @@
               <span v-else class="text-gray-400">{{ t('keys.selectGroup') }}</span>
             </template>
             <template #option="{ option, selected }">
+              <!-- 分类段头(不可选) -->
+              <span
+                v-if="(option as any).kind === 'group'"
+                class="flex w-full items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+              >
+                <svg class="h-3 w-3 shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+                </svg>
+                <span class="truncate">{{ (option as any).label }}</span>
+              </span>
               <GroupOptionItem
+                v-else
                 :name="(option as unknown as GroupOption).label"
                 :platform="(option as unknown as GroupOption).platform"
                 :subscription-type="(option as unknown as GroupOption).subscriptionType"
@@ -497,6 +508,7 @@
                 :peak-end="(option as unknown as GroupOption).peakEnd"
                 :peak-rate-multiplier="(option as unknown as GroupOption).peakRateMultiplier"
                 :description="(option as unknown as GroupOption).description"
+                :recommendation="(option as unknown as GroupOption).recommendation"
                 :selected="selected"
               />
             </template>
@@ -1096,6 +1108,7 @@
               :peak-end="option.peakEnd"
               :peak-rate-multiplier="option.peakRateMultiplier"
               :description="option.description"
+              :recommendation="option.recommendation"
               :selected="
                 selectedKeyForGroup?.group_id === option.value ||
                 (!selectedKeyForGroup?.group_id && option.value === null)
@@ -1136,6 +1149,7 @@ import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 	import EndpointPopover from '@/components/keys/EndpointPopover.vue'
 	import GroupBadge from '@/components/common/GroupBadge.vue'
 	import GroupOptionItem from '@/components/common/GroupOptionItem.vue'
+	import { buildSectionedGroupOptions } from './keyGroupOptions'
 	import type { ApiKey, Group, PublicSettings, SubscriptionType, GroupPlatform, UpdateApiKeyRequest } from '@/types'
 import type { Column } from '@/components/common/types'
 import type { BatchApiKeyUsageStats } from '@/api/usage'
@@ -1165,6 +1179,8 @@ interface GroupOption {
   peakRateMultiplier: number
   subscriptionType: SubscriptionType
   platform: GroupPlatform
+  category: string
+  recommendation: string
 }
 
 const appStore = useAppStore()
@@ -1414,8 +1430,15 @@ const groupOptions = computed(() =>
     peakEnd: group.peak_end,
     peakRateMultiplier: group.peak_rate_multiplier,
     subscriptionType: group.subscription_type,
-    platform: group.platform
+    platform: group.platform,
+    category: group.category ?? '',
+    recommendation: group.recommendation ?? ''
   }))
+)
+
+// 创建密钥的分组下拉:按分类分段(未分类归末尾;无分类时退化为平铺)
+const sectionedGroupOptions = computed(() =>
+  buildSectionedGroupOptions(groupOptions.value, t('keys.uncategorized'))
 )
 
 // Group dropdown search

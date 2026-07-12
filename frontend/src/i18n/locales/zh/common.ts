@@ -413,5 +413,12 @@ export default {
     invalidOrExpiredToken: '密码重置链接无效或已过期。请重新请求一个新链接。'
   },
 
+  // 分组推荐标签
+  groupRecommendation: {
+    none: '无',
+    featured: '主推',
+    value: '性价比首选'
+  },
+
   // Dashboard
 }

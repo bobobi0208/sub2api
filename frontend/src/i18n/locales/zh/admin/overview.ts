@@ -774,6 +774,8 @@ export default {
       form: {
         name: '名称',
         description: '描述',
+        category: '分类',
+        recommendation: '推荐标签',
         platform: '平台',
         rateMultiplier: '费率倍数',
         status: '状态',
@@ -848,6 +850,9 @@ export default {
       },
       enterGroupName: '请输入分组名称',
       optionalDescription: '可选描述',
+      categoryPlaceholder: '如：GPT 系列、Claude Code',
+      categoryHint: '同一分类的分组在创建密钥时会归到一起显示；留空为未分类',
+      recommendationHint: '在创建密钥的分组下拉里显示彩色标签',
       platformHint: '选择此分组关联的平台',
       platformNotEditable: '创建后不可更改平台',
       noGroupsYet: '暂无分组',

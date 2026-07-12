@@ -873,6 +873,8 @@ var (
 		{Name: "mcp_xml_inject", Type: field.TypeBool, Default: true},
 		{Name: "supported_model_scopes", Type: field.TypeJSON, SchemaType: map[string]string{"postgres": "jsonb"}},
 		{Name: "sort_order", Type: field.TypeInt, Default: 0},
+		{Name: "category", Type: field.TypeString, Size: 50, Default: ""},
+		{Name: "recommendation", Type: field.TypeString, Size: 20, Default: ""},
 		{Name: "allow_messages_dispatch", Type: field.TypeBool, Default: false},
 		{Name: "require_oauth_only", Type: field.TypeBool, Default: false},
 		{Name: "require_privacy_set", Type: field.TypeBool, Default: false},

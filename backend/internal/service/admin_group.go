@@ -300,6 +300,8 @@ func (s *adminServiceImpl) CreateGroup(ctx context.Context, input *CreateGroupIn
 		MessagesDispatchModelConfig:     normalizeOpenAIMessagesDispatchModelConfig(input.MessagesDispatchModelConfig),
 		ModelsListConfig:                normalizeGroupModelsListConfig(input.ModelsListConfig),
 		RPMLimit:                        input.RPMLimit,
+		Category:                        NormalizeGroupCategory(input.Category),
+		Recommendation:                  NormalizeGroupRecommendation(input.Recommendation),
 	}
 	sanitizeGroupMessagesDispatchFields(group)
 	if err := s.groupRepo.Create(ctx, group); err != nil {
@@ -612,6 +614,12 @@ func (s *adminServiceImpl) UpdateGroup(ctx context.Context, id int64, input *Upd
 	}
 	if input.RPMLimit != nil {
 		group.RPMLimit = *input.RPMLimit
+	}
+	if input.Category != nil {
+		group.Category = NormalizeGroupCategory(*input.Category)
+	}
+	if input.Recommendation != nil {
+		group.Recommendation = NormalizeGroupRecommendation(*input.Recommendation)
 	}
 	sanitizeGroupMessagesDispatchFields(group)
 

@@ -96,6 +96,10 @@ const (
 	FieldSupportedModelScopes = "supported_model_scopes"
 	// FieldSortOrder holds the string denoting the sort_order field in the database.
 	FieldSortOrder = "sort_order"
+	// FieldCategory holds the string denoting the category field in the database.
+	FieldCategory = "category"
+	// FieldRecommendation holds the string denoting the recommendation field in the database.
+	FieldRecommendation = "recommendation"
 	// FieldAllowMessagesDispatch holds the string denoting the allow_messages_dispatch field in the database.
 	FieldAllowMessagesDispatch = "allow_messages_dispatch"
 	// FieldRequireOauthOnly holds the string denoting the require_oauth_only field in the database.
@@ -225,6 +229,8 @@ var Columns = []string{
 	FieldMcpXMLInject,
 	FieldSupportedModelScopes,
 	FieldSortOrder,
+	FieldCategory,
+	FieldRecommendation,
 	FieldAllowMessagesDispatch,
 	FieldRequireOauthOnly,
 	FieldRequirePrivacySet,
@@ -325,6 +331,14 @@ var (
 	DefaultSupportedModelScopes []string
 	// DefaultSortOrder holds the default value on creation for the "sort_order" field.
 	DefaultSortOrder int
+	// DefaultCategory holds the default value on creation for the "category" field.
+	DefaultCategory string
+	// CategoryValidator is a validator for the "category" field. It is called by the builders before save.
+	CategoryValidator func(string) error
+	// DefaultRecommendation holds the default value on creation for the "recommendation" field.
+	DefaultRecommendation string
+	// RecommendationValidator is a validator for the "recommendation" field. It is called by the builders before save.
+	RecommendationValidator func(string) error
 	// DefaultAllowMessagesDispatch holds the default value on creation for the "allow_messages_dispatch" field.
 	DefaultAllowMessagesDispatch bool
 	// DefaultRequireOauthOnly holds the default value on creation for the "require_oauth_only" field.
@@ -539,6 +553,16 @@ func ByMcpXMLInject(opts ...sql.OrderTermOption) OrderOption {
 // BySortOrder orders the results by the sort_order field.
 func BySortOrder(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSortOrder, opts...).ToFunc()
+}
+
+// ByCategory orders the results by the category field.
+func ByCategory(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCategory, opts...).ToFunc()
+}
+
+// ByRecommendation orders the results by the recommendation field.
+func ByRecommendation(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRecommendation, opts...).ToFunc()
 }
 
 // ByAllowMessagesDispatch orders the results by the allow_messages_dispatch field.

@@ -414,5 +414,12 @@ export default {
     invalidOrExpiredToken: 'The password reset link is invalid or has expired. Please request a new one.'
   },
 
+  // Group recommendation tags
+  groupRecommendation: {
+    none: 'None',
+    featured: 'Featured',
+    value: 'Best Value'
+  },
+
   // Dashboard
 }
