@@ -54,6 +54,21 @@ const IconStub = {
   template: '<span />',
 }
 
+const subscriptionPlanFixture = {
+  id: 1,
+  group_id: 7,
+  group_platform: 'openai',
+  name: 'GPT Daily',
+  description: 'Daily plan',
+  price: 1.91,
+  original_price: 1.91,
+  validity_days: 1,
+  validity_unit: 'days',
+  features: [],
+  for_sale: true,
+  sort_order: 1,
+}
+
 function mountHomeView() {
   return mount(HomeView, {
     global: {
@@ -81,22 +96,7 @@ describe('HomeView', () => {
 
   it('renders public subscription plan prices in USD on the landing page', async () => {
     getPlansPublic.mockResolvedValue({
-      data: [
-        {
-          id: 1,
-          group_id: 7,
-          group_platform: 'openai',
-          name: 'GPT Daily',
-          description: 'Daily plan',
-          price: 1.91,
-          original_price: 1.91,
-          validity_days: 1,
-          validity_unit: 'days',
-          features: [],
-          for_sale: true,
-          sort_order: 1,
-        },
-      ],
+      data: [subscriptionPlanFixture],
     })
 
     const wrapper = mountHomeView()
@@ -104,5 +104,18 @@ describe('HomeView', () => {
 
     expect(wrapper.text()).toContain('$1.91')
     expect(wrapper.text()).not.toContain('¥1.91')
+  })
+
+  it('renders subscription plans before the reliability band', async () => {
+    getPlansPublic.mockResolvedValue({ data: [subscriptionPlanFixture] })
+    const wrapper = mountHomeView()
+    await flushPromises()
+
+    const content = wrapper.text()
+    expect(content.indexOf('home.pricing.title')).toBeGreaterThan(-1)
+    expect(content.indexOf('home.stats.subtitle')).toBeGreaterThan(-1)
+    expect(content.indexOf('home.pricing.title')).toBeLessThan(
+      content.indexOf('home.stats.subtitle')
+    )
   })
 })

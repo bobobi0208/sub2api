@@ -15,8 +15,8 @@ export default {
     getStarted: '立即开始',
     goToDashboard: '进入控制台',
     // 新增：面向用户的价值主张
-    heroSubtitle: '一个密钥，畅用多个 AI 模型',
-    heroDescription: '无需管理多个订阅账号，一站式接入 Claude、GPT、Gemini 等主流 AI 服务',
+    heroSubtitle: '一次订阅，畅享专属 AI 额度',
+    heroDescription: '日卡、周卡、月卡灵活选择，订阅期内享专属额度，到期自动失效且不自动续费',
     tags: {
       subscriptionToApi: '订阅转 API',
       stickySession: '会话保持',
@@ -102,6 +102,27 @@ export default {
       gemini: 'Gemini',
       antigravity: 'Antigravity',
       more: '更多'
+    },
+    stats: {
+      subtitle: '所有系统运行正常 · 7×24 小时监控',
+      uptime: '99.99%',
+      uptimeLabel: '服务可用性 SLA',
+      latency: '<200ms',
+      latencyLabel: '中位延迟',
+      requests: '千万级',
+      requestsLabel: '每日请求',
+      monitor: '24/7',
+      monitorLabel: '实时监控'
+    },
+    pricing: {
+      badge: '灵活订阅',
+      title: '选择适合你的订阅套餐',
+      subtitle: '日卡、周卡、月卡灵活选择 · 专属额度 · 到期自动失效，不自动续费',
+      popular: '最超值',
+      cta: '立即订阅',
+      perDay: '折合 {price} / 天',
+      daysUnit: '天',
+      guarantee: '购买即时开通 · 支持支付宝 / 微信 / Stripe · 到期不自动续费'
     },
     // CTA 区块
     cta: {

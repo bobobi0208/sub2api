@@ -15,8 +15,8 @@ export default {
     getStarted: 'Get Started',
     goToDashboard: 'Go to Dashboard',
     // User-focused value proposition
-    heroSubtitle: 'One Key, All AI Models',
-    heroDescription: 'No need to manage multiple subscriptions. Access Claude, GPT, Gemini and more with a single API key',
+    heroSubtitle: 'One Subscription, Dedicated AI Capacity',
+    heroDescription: 'Choose a daily, weekly, or monthly plan with dedicated quota, automatic expiry, and no auto-renewal',
     tags: {
       subscriptionToApi: 'Subscription to API',
       stickySession: 'Session Persistence',
@@ -102,6 +102,27 @@ export default {
       gemini: 'Gemini',
       antigravity: 'Antigravity',
       more: 'More'
+    },
+    stats: {
+      subtitle: 'All systems operational · monitored 24/7',
+      uptime: '99.99%',
+      uptimeLabel: 'Service availability SLA',
+      latency: '<200ms',
+      latencyLabel: 'Median latency',
+      requests: '10M+',
+      requestsLabel: 'Daily requests',
+      monitor: '24/7',
+      monitorLabel: 'Live monitoring'
+    },
+    pricing: {
+      badge: 'Flexible Subscriptions',
+      title: 'Choose the Subscription That Fits',
+      subtitle: 'Daily, weekly, and monthly plans · dedicated quota · automatic expiry with no auto-renewal',
+      popular: 'Best Value',
+      cta: 'Subscribe Now',
+      perDay: '{price} / day',
+      daysUnit: 'days',
+      guarantee: 'Instant activation · Alipay / WeChat Pay / Stripe · no auto-renewal'
     },
     // CTA section
     cta: {

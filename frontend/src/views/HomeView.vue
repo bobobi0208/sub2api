@@ -134,124 +134,10 @@
         </div>
       </section>
 
-      <!-- ============ Reliability / SLA band ============ -->
-      <section class="border-b border-line py-10">
-        <div class="mb-6 flex items-center gap-2.5">
-          <span class="live-pip"></span>
-          <span class="mono text-[11px] uppercase tracking-[0.14em] text-muted">{{ t('home.stats.subtitle') }}</span>
-        </div>
-        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <div v-for="s in stats" :key="s.key" class="stat-cell">
-            <div class="mb-3 text-primary-500"><Icon :name="s.icon" size="md" :stroke-width="1.8" /></div>
-            <div class="display stat-num">{{ t(`home.stats.${s.key}`) }}</div>
-            <div class="mono mt-1.5 text-[11px] uppercase tracking-wider text-faint">{{ t(`home.stats.${s.key}Label`) }}</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ Pain Points ============ -->
-      <section class="border-b border-line py-16">
-        <div class="section-head">
-          <span class="mono section-index">[ 01 ]</span>
-          <h2 class="display section-title">{{ t('home.painPoints.title') }}</h2>
-        </div>
-        <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div v-for="(p, i) in painPoints" :key="p.key" class="cell group">
-            <span class="mono cell-num">{{ String(i + 1).padStart(2, '0') }}</span>
-            <div class="my-4 h-8 w-8 text-muted transition-colors group-hover:text-primary-500">
-              <Icon :name="p.icon" size="lg" :stroke-width="1.6" />
-            </div>
-            <h3 class="text-[15px] font-semibold text-ink">{{ t(`home.painPoints.items.${p.key}.title`) }}</h3>
-            <p class="mt-2 text-[13px] leading-relaxed text-muted">{{ t(`home.painPoints.items.${p.key}.desc`) }}</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ Solutions / Features ============ -->
-      <section class="border-b border-line py-16">
-        <div class="section-head">
-          <span class="mono section-index">[ 02 ]</span>
-          <div>
-            <h2 class="display section-title">{{ t('home.solutions.title') }}</h2>
-            <p class="mt-1 text-[14px] text-muted">{{ t('home.solutions.subtitle') }}</p>
-          </div>
-        </div>
-        <div class="mt-10 grid gap-6 md:grid-cols-3">
-          <div v-for="(f, i) in features" :key="f.key" class="feature-card group">
-            <div class="flex items-center justify-between">
-              <div class="feat-icon">
-                <Icon :name="f.icon" size="md" class="text-white" :stroke-width="1.8" />
-              </div>
-              <span class="mono text-[11px] text-faint">0{{ i + 1 }} / 03</span>
-            </div>
-            <h3 class="mt-6 text-[17px] font-semibold text-ink">{{ t(`home.features.${f.key}`) }}</h3>
-            <p class="mt-2.5 text-[13.5px] leading-relaxed text-muted">{{ t(`home.features.${f.key}Desc`) }}</p>
-            <div class="feat-rule"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ Comparison ============ -->
-      <section class="border-b border-line py-16">
-        <div class="section-head">
-          <span class="mono section-index">[ 03 ]</span>
-          <h2 class="display section-title">{{ t('home.comparison.title') }}</h2>
-        </div>
-        <div class="mt-10 overflow-hidden rounded-2xl border border-line">
-          <table class="w-full border-collapse text-left">
-            <thead>
-              <tr class="mono text-[11px] uppercase tracking-wider">
-                <th class="cmp-th">{{ t('home.comparison.headers.feature') }}</th>
-                <th class="cmp-th text-muted">{{ t('home.comparison.headers.official') }}</th>
-                <th class="cmp-th cmp-th-us">{{ t('home.comparison.headers.us') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="row in comparisonRows" :key="row" class="cmp-row">
-                <td class="cmp-td font-semibold text-ink">{{ t(`home.comparison.items.${row}.feature`) }}</td>
-                <td class="cmp-td text-muted">
-                  <span class="mr-2 inline-block text-faint"><Icon name="x" size="xs" :stroke-width="2.5" /></span>
-                  {{ t(`home.comparison.items.${row}.official`) }}
-                </td>
-                <td class="cmp-td cmp-td-us text-ink">
-                  <span class="mr-2 inline-block text-primary-500"><Icon name="check" size="xs" :stroke-width="2.5" /></span>
-                  {{ t(`home.comparison.items.${row}.us`) }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- ============ Providers ============ -->
-      <section class="border-b border-line py-16">
-        <div class="section-head">
-          <span class="mono section-index">[ 04 ]</span>
-          <div>
-            <h2 class="display section-title">{{ t('home.providers.title') }}</h2>
-            <p class="mt-1 text-[14px] text-muted">{{ t('home.providers.description') }}</p>
-          </div>
-        </div>
-        <div class="mt-10 flex flex-wrap gap-3">
-          <div
-            v-for="p in providers"
-            :key="p.label"
-            class="provider-chip"
-            :class="{ 'provider-soon': p.soon }"
-          >
-            <span class="provider-badge" :style="{ background: p.color }">{{ p.mark }}</span>
-            <span class="text-[13.5px] font-semibold text-ink">{{ p.label }}</span>
-            <span class="mono provider-tag" :class="p.soon ? 'provider-tag-soon' : 'provider-tag-ok'">
-              {{ p.soon ? t('home.providers.soon') : t('home.providers.supported') }}
-            </span>
-          </div>
-        </div>
-      </section>
-
       <!-- ============ Pricing (live from admin plans; hidden when none) ============ -->
       <section v-if="plans.length" class="border-b border-line py-16">
         <div class="section-head">
-          <span class="mono section-index">[ 05 ]</span>
+          <span class="mono section-index">[ 01 ]</span>
           <div>
             <h2 class="display section-title">{{ t('home.pricing.title') }}</h2>
             <p class="mt-1.5 max-w-lg text-[14px] text-muted">{{ t('home.pricing.subtitle') }}</p>
@@ -326,6 +212,120 @@
           <Icon name="shield" size="xs" :stroke-width="2" class="text-primary-500" />
           {{ t('home.pricing.guarantee') }}
         </p>
+      </section>
+
+      <!-- ============ Reliability / SLA band ============ -->
+      <section class="border-b border-line py-10">
+        <div class="mb-6 flex items-center gap-2.5">
+          <span class="live-pip"></span>
+          <span class="mono text-[11px] uppercase tracking-[0.14em] text-muted">{{ t('home.stats.subtitle') }}</span>
+        </div>
+        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div v-for="s in stats" :key="s.key" class="stat-cell">
+            <div class="mb-3 text-primary-500"><Icon :name="s.icon" size="md" :stroke-width="1.8" /></div>
+            <div class="display stat-num">{{ t(`home.stats.${s.key}`) }}</div>
+            <div class="mono mt-1.5 text-[11px] uppercase tracking-wider text-faint">{{ t(`home.stats.${s.key}Label`) }}</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ Pain Points ============ -->
+      <section class="border-b border-line py-16">
+        <div class="section-head">
+          <span class="mono section-index">[ 02 ]</span>
+          <h2 class="display section-title">{{ t('home.painPoints.title') }}</h2>
+        </div>
+        <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div v-for="(p, i) in painPoints" :key="p.key" class="cell group">
+            <span class="mono cell-num">{{ String(i + 1).padStart(2, '0') }}</span>
+            <div class="my-4 h-8 w-8 text-muted transition-colors group-hover:text-primary-500">
+              <Icon :name="p.icon" size="lg" :stroke-width="1.6" />
+            </div>
+            <h3 class="text-[15px] font-semibold text-ink">{{ t(`home.painPoints.items.${p.key}.title`) }}</h3>
+            <p class="mt-2 text-[13px] leading-relaxed text-muted">{{ t(`home.painPoints.items.${p.key}.desc`) }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ Solutions / Features ============ -->
+      <section class="border-b border-line py-16">
+        <div class="section-head">
+          <span class="mono section-index">[ 03 ]</span>
+          <div>
+            <h2 class="display section-title">{{ t('home.solutions.title') }}</h2>
+            <p class="mt-1 text-[14px] text-muted">{{ t('home.solutions.subtitle') }}</p>
+          </div>
+        </div>
+        <div class="mt-10 grid gap-6 md:grid-cols-3">
+          <div v-for="(f, i) in features" :key="f.key" class="feature-card group">
+            <div class="flex items-center justify-between">
+              <div class="feat-icon">
+                <Icon :name="f.icon" size="md" class="text-white" :stroke-width="1.8" />
+              </div>
+              <span class="mono text-[11px] text-faint">0{{ i + 1 }} / 03</span>
+            </div>
+            <h3 class="mt-6 text-[17px] font-semibold text-ink">{{ t(`home.features.${f.key}`) }}</h3>
+            <p class="mt-2.5 text-[13.5px] leading-relaxed text-muted">{{ t(`home.features.${f.key}Desc`) }}</p>
+            <div class="feat-rule"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ Comparison ============ -->
+      <section class="border-b border-line py-16">
+        <div class="section-head">
+          <span class="mono section-index">[ 04 ]</span>
+          <h2 class="display section-title">{{ t('home.comparison.title') }}</h2>
+        </div>
+        <div class="mt-10 overflow-hidden rounded-2xl border border-line">
+          <table class="w-full border-collapse text-left">
+            <thead>
+              <tr class="mono text-[11px] uppercase tracking-wider">
+                <th class="cmp-th">{{ t('home.comparison.headers.feature') }}</th>
+                <th class="cmp-th text-muted">{{ t('home.comparison.headers.official') }}</th>
+                <th class="cmp-th cmp-th-us">{{ t('home.comparison.headers.us') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in comparisonRows" :key="row" class="cmp-row">
+                <td class="cmp-td font-semibold text-ink">{{ t(`home.comparison.items.${row}.feature`) }}</td>
+                <td class="cmp-td text-muted">
+                  <span class="mr-2 inline-block text-faint"><Icon name="x" size="xs" :stroke-width="2.5" /></span>
+                  {{ t(`home.comparison.items.${row}.official`) }}
+                </td>
+                <td class="cmp-td cmp-td-us text-ink">
+                  <span class="mr-2 inline-block text-primary-500"><Icon name="check" size="xs" :stroke-width="2.5" /></span>
+                  {{ t(`home.comparison.items.${row}.us`) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ Providers ============ -->
+      <section class="border-b border-line py-16">
+        <div class="section-head">
+          <span class="mono section-index">[ 05 ]</span>
+          <div>
+            <h2 class="display section-title">{{ t('home.providers.title') }}</h2>
+            <p class="mt-1 text-[14px] text-muted">{{ t('home.providers.description') }}</p>
+          </div>
+        </div>
+        <div class="mt-10 flex flex-wrap gap-3">
+          <div
+            v-for="p in providers"
+            :key="p.label"
+            class="provider-chip"
+            :class="{ 'provider-soon': p.soon }"
+          >
+            <span class="provider-badge" :style="{ background: p.color }">{{ p.mark }}</span>
+            <span class="text-[13.5px] font-semibold text-ink">{{ p.label }}</span>
+            <span class="mono provider-tag" :class="p.soon ? 'provider-tag-soon' : 'provider-tag-ok'">
+              {{ p.soon ? t('home.providers.soon') : t('home.providers.supported') }}
+            </span>
+          </div>
+        </div>
       </section>
 
       <!-- ============ CTA ============ -->
