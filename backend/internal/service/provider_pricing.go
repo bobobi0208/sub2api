@@ -97,6 +97,9 @@ func (s *ProviderPricingService) Get(ctx context.Context) (*ProviderPricingData,
 				if modelName == "" || !strings.EqualFold(group.Platform, model.Platform) {
 					continue
 				}
+				if model.HasConfiguredIntervals {
+					continue
+				}
 				row, ok := buildProviderPricingModel(modelName, groupName, model.Pricing, group)
 				if !ok {
 					continue

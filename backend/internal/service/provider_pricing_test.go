@@ -200,6 +200,47 @@ func TestProviderPricingService_Filters(t *testing.T) {
 	require.Equal(t, "standard", got.Models[0].GroupName)
 }
 
+func TestProviderPricingService_FiltersConfiguredIntervalsAfterGlobalFallback(t *testing.T) {
+	channelRepo := &mockChannelRepository{
+		listAllFn: func(context.Context) ([]Channel, error) {
+			return []Channel{{
+				ID:       1,
+				Name:     "image-channel",
+				Status:   StatusActive,
+				GroupIDs: []int64{1},
+				ModelPricing: []ChannelModelPricing{{
+					Platform:    PlatformGemini,
+					Models:      []string{"image-model"},
+					BillingMode: BillingModeImage,
+					Intervals:   []PricingInterval{{TierLabel: "1K"}, {TierLabel: "2K"}},
+				}},
+			}}, nil
+		},
+	}
+	groupRepo := &stubGroupRepoForAvailable{activeGroups: []Group{{
+		ID: 1, Name: "standard", Platform: PlatformGemini, Status: StatusActive,
+		SubscriptionType: SubscriptionTypeStandard, RateMultiplier: 1,
+	}}}
+	channelService := NewChannelService(
+		channelRepo,
+		groupRepo,
+		nil,
+		newStubPricingServiceFromMap(map[string]*LiteLLMModelPricing{
+			"image-model": {Mode: "image_generation", OutputCostPerImage: 0.2},
+		}),
+	)
+	channels, err := channelService.ListAvailable(context.Background())
+	require.NoError(t, err)
+	require.Len(t, channels, 1)
+	require.Len(t, channels[0].SupportedModels, 1)
+	require.NotNil(t, channels[0].SupportedModels[0].Pricing)
+	require.NotNil(t, channels[0].SupportedModels[0].Pricing.PerRequestPrice)
+	require.True(t, channels[0].SupportedModels[0].HasConfiguredIntervals)
+
+	got := getProviderPricingForTest(t, channels)
+	require.Empty(t, got.Models, "configured intervals must stay excluded after global fallback")
+}
+
 func TestProviderPricingService_RejectsInvalid(t *testing.T) {
 	got := getProviderPricingForTest(t, []AvailableChannel{{
 		Name:   "invalid-channel",

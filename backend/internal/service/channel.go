@@ -393,9 +393,10 @@ type ChannelUsageFields struct {
 
 // SupportedModel 渠道的一个支持模型条目（无通配符、可直接展示给用户）
 type SupportedModel struct {
-	Name     string               // 用户侧模型名
-	Platform string               // 所属平台
-	Pricing  *ChannelModelPricing // 定价详情（nil 表示未配置定价）
+	Name                   string               // 用户侧模型名
+	Platform               string               // 所属平台
+	Pricing                *ChannelModelPricing // 定价详情（nil 表示未配置定价）
+	HasConfiguredIntervals bool                 // 全局价格回落前，渠道定价是否配置过分档
 }
 
 // wildcardSuffix 是模型模式中的通配符后缀标记（仅支持尾部匹配）。
@@ -538,9 +539,10 @@ func (c *Channel) SupportedModels() []SupportedModel {
 		}
 		seen[key] = struct{}{}
 		result = append(result, SupportedModel{
-			Name:     displayName,
-			Platform: platform,
-			Pricing:  pricing,
+			Name:                   displayName,
+			Platform:               platform,
+			Pricing:                pricing,
+			HasConfiguredIntervals: pricing != nil && len(pricing.Intervals) > 0,
 		})
 	}
 
