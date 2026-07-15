@@ -111,6 +111,10 @@ func TestUserAvailableChannel_FieldWhitelist(t *testing.T) {
 		_, exists := groupDecoded[key]
 		require.Truef(t, exists, "group DTO must expose %q", key)
 	}
+	for _, key := range []string{"image_rate_independent", "image_rate_multiplier", "image_price_1k", "image_price_2k", "image_price_4k"} {
+		_, exists := groupDecoded[key]
+		require.Falsef(t, exists, "group DTO must not expose internal field %q", key)
+	}
 
 	// pricing interval 白名单：不应暴露 id / sort_order。
 	pricing := toUserPricing(&service.ChannelModelPricing{

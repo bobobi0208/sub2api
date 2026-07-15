@@ -79,6 +79,7 @@ type Config struct {
 	Default                 DefaultConfig                 `mapstructure:"default"`
 	RateLimit               RateLimitConfig               `mapstructure:"rate_limit"`
 	Pricing                 PricingConfig                 `mapstructure:"pricing"`
+	ProviderPricing         ProviderPricingConfig         `mapstructure:"provider_pricing"`
 	Gateway                 GatewayConfig                 `mapstructure:"gateway"`
 	APIKeyAuth              APIKeyAuthCacheConfig         `mapstructure:"api_key_auth_cache"`
 	SubscriptionCache       SubscriptionCacheConfig       `mapstructure:"subscription_cache"`
@@ -595,6 +596,10 @@ type PricingConfig struct {
 	UpdateIntervalHours int `mapstructure:"update_interval_hours"`
 	// 哈希校验间隔（分钟）
 	HashCheckIntervalMinutes int `mapstructure:"hash_check_interval_minutes"`
+}
+
+type ProviderPricingConfig struct {
+	AuthSecret string `mapstructure:"auth_secret"`
 }
 
 type ServerConfig struct {
@@ -1485,6 +1490,7 @@ func load(allowMissingJWTSecret bool) (*Config, error) {
 	}
 	cfg.Server.FrontendURL = strings.TrimSpace(cfg.Server.FrontendURL)
 	cfg.JWT.Secret = strings.TrimSpace(cfg.JWT.Secret)
+	cfg.ProviderPricing.AuthSecret = strings.TrimSpace(cfg.ProviderPricing.AuthSecret)
 	cfg.LinuxDo.ClientID = strings.TrimSpace(cfg.LinuxDo.ClientID)
 	cfg.LinuxDo.ClientSecret = strings.TrimSpace(cfg.LinuxDo.ClientSecret)
 	cfg.LinuxDo.AuthorizeURL = strings.TrimSpace(cfg.LinuxDo.AuthorizeURL)
@@ -1875,6 +1881,7 @@ func setDefaults() {
 	viper.SetDefault("pricing.fallback_file", "./resources/model-pricing/model_prices_and_context_window.json")
 	viper.SetDefault("pricing.update_interval_hours", 24)
 	viper.SetDefault("pricing.hash_check_interval_minutes", 10)
+	viper.SetDefault("provider_pricing.auth_secret", "")
 
 	// Timezone (default to Asia/Shanghai for Chinese users)
 	viper.SetDefault("timezone", "Asia/Shanghai")
