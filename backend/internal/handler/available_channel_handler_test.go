@@ -73,7 +73,7 @@ func TestUserAvailableChannel_FieldWhitelist(t *testing.T) {
 			{
 				Platform:        "anthropic",
 				Groups:          []userAvailableGroup{{ID: 1, Name: "g1", Platform: "anthropic"}},
-				SupportedModels: []userSupportedModel{},
+				SupportedModels: []userSupportedModel{{Name: "claude", Platform: "anthropic"}},
 			},
 		},
 	}
@@ -111,6 +111,16 @@ func TestUserAvailableChannel_FieldWhitelist(t *testing.T) {
 		_, exists := groupDecoded[key]
 		require.Truef(t, exists, "group DTO must expose %q", key)
 	}
+	for _, key := range []string{"image_rate_independent", "image_rate_multiplier", "image_price_1k", "image_price_2k", "image_price_4k"} {
+		_, exists := groupDecoded[key]
+		require.Falsef(t, exists, "group DTO must not expose internal field %q", key)
+	}
+
+	rawModel, err := json.Marshal(row.Platforms[0].SupportedModels[0])
+	require.NoError(t, err)
+	var modelDecoded map[string]any
+	require.NoError(t, json.Unmarshal(rawModel, &modelDecoded))
+	require.NotContains(t, modelDecoded, "has_configured_intervals")
 
 	// pricing interval 白名单：不应暴露 id / sort_order。
 	pricing := toUserPricing(&service.ChannelModelPricing{

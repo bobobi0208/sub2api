@@ -1017,6 +1017,15 @@ pricing:
   hash_check_interval_minutes: 10
 
 # =============================================================================
+# Provider Pricing API (Optional)
+# Hvoy 价格接口（可选）
+# =============================================================================
+provider_pricing:
+  # Empty keeps GET /api/provider/pricing public.
+  # When set, callers must send X-Hvoy-Ts and X-Hvoy-Sign.
+  auth_secret: ""
+
+# =============================================================================
 # Billing Configuration
 # 计费配置
 # =============================================================================

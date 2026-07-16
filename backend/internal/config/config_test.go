@@ -17,6 +17,15 @@ func resetViperWithJWTSecret(t *testing.T) {
 	t.Setenv("JWT_SECRET", strings.Repeat("x", 32))
 }
 
+func TestLoadProviderPricingAuthSecret(t *testing.T) {
+	resetViperWithJWTSecret(t)
+	t.Setenv("PROVIDER_PRICING_AUTH_SECRET", "test-secret")
+
+	cfg, err := Load()
+	require.NoError(t, err)
+	require.Equal(t, "test-secret", cfg.ProviderPricing.AuthSecret)
+}
+
 func TestLoadForBootstrapAllowsMissingJWTSecret(t *testing.T) {
 	viper.Reset()
 	t.Setenv("JWT_SECRET", "")

@@ -112,6 +112,39 @@ func TestListAvailable_InactiveGroupIDSilentlyDropped(t *testing.T) {
 	require.Equal(t, int64(1), out[0].Groups[0].ID)
 }
 
+func TestListAvailable_CarriesImagePricingMetadata(t *testing.T) {
+	channels := []Channel{{
+		ID:       1,
+		Name:     "image-channel",
+		Status:   StatusActive,
+		GroupIDs: []int64{1},
+	}}
+	groupRepo := &stubGroupRepoForAvailable{
+		activeGroups: []Group{{
+			ID:                   1,
+			Name:                 "image-group",
+			Platform:             PlatformGemini,
+			ImageRateIndependent: true,
+			ImageRateMultiplier:  0.75,
+			ImagePrice1K:         testPtrFloat64(0.1),
+			ImagePrice2K:         testPtrFloat64(0.2),
+			ImagePrice4K:         testPtrFloat64(0.3),
+		}},
+	}
+
+	out, err := newAvailableChannelService(channels, groupRepo).ListAvailable(context.Background())
+	require.NoError(t, err)
+	require.Len(t, out, 1)
+	require.Len(t, out[0].Groups, 1)
+
+	group := out[0].Groups[0]
+	require.True(t, group.ImageRateIndependent)
+	require.Equal(t, 0.75, group.ImageRateMultiplier)
+	require.Equal(t, 0.1, *group.ImagePrice1K)
+	require.Equal(t, 0.2, *group.ImagePrice2K)
+	require.Equal(t, 0.3, *group.ImagePrice4K)
+}
+
 func TestListAvailable_SortedByName(t *testing.T) {
 	channels := []Channel{
 		{ID: 1, Name: "beta"},
